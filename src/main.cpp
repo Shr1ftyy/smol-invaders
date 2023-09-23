@@ -75,6 +75,7 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "smol-invaders");
 
+
     Vector2 shipPosition = 
     { 
         (float)screenWidth / 2.0f,
@@ -135,9 +136,12 @@ int main(void)
         std::string shipPosText = fmt::format("X: {}, Y: {}", shipPosition.x, shipPosition.y);
         std::string numBulletsText = fmt::format("# of Bullets: {}", bullets.size());
 
-        DrawText("move the ship with arrow keys", 10, 10, 20, RAYWHITE);
-        DrawText(shipPosText.c_str(), 10, 30, 20, RAYWHITE);
-        DrawText(numBulletsText.c_str(), 10, 50, 20, RAYWHITE);
+        Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
+
+        DrawTextEx(hackNerdFontRegular, "move the ship with arrow keys", { 10, 10}, 20, 1, RAYWHITE);
+        DrawTextEx(hackNerdFontRegular, shipPosText.c_str(), { 10, 30 }, 20, 1, RAYWHITE);
+        DrawTextEx(hackNerdFontRegular, numBulletsText.c_str(), { 10, 50 }, 20, 1, RAYWHITE);
+        DrawFPS(10, 70);
         
 
         Rectangle shipSourceRec = { 0.0f, 0.0f, (float)shipSize, (float)shipSize };
