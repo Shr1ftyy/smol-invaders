@@ -6,6 +6,9 @@
 #include <chrono>
 #include <vector>
 
+#include "Manager.h"
+#include "Player.h"
+
 #define BULLET_HEIGHT 10
 #define BULLET_WIDTH 5
 #define BULLET_VEL 5
@@ -25,43 +28,37 @@ void fireWeapons(Vector2 shipOrigin, int shipSize, std::vector<Rectangle*>* bull
 }
 
 //------------------------------------------------------------------------------------
-// Out-Of-Bounds check
-//------------------------------------------------------------------------------------
-bool outOfBounds(Vector2 entity, int screenWidth, int screenHeight) {
-    if (entity.x <= 0 || entity.x >= screenWidth
-        || entity.y <= 0 || entity.y >= screenHeight) {
-        return true;
-    }
-    return false;
-}
-
-//------------------------------------------------------------------------------------
 // Render bullets
 //------------------------------------------------------------------------------------
-void renderBullets(std::vector<Rectangle*>* bullets, int screenWidth, int screenHeight) {
-    std::vector<Rectangle*>::iterator iter = bullets->begin();
-    int i = 0;  // counter.
+//void renderBullets(std::vector<Rectangle*>* bullets, int screenWidth, int screenHeight) {
+//    std::vector<Rectangle*>::iterator iter = bullets->begin();
+//    int i = 0;  // counter.
+//
+//    bullets->erase(std::remove_if(
+//        bullets->begin(), 
+//        bullets->end(),
+//        [screenWidth, screenHeight](Rectangle* bullet)->bool {
+//            Vector2 bulletPos = { bullet->x, bullet->y };
+//            return outOfBounds(bulletPos, screenWidth, screenHeight);
+//        }), 
+//        bullets->end()
+//	);
+//
+//    if (bullets->size() <= 0) {
+//        return;
+//    }
+//
+//    for (iter; iter != bullets->end(); ++iter, i++) {
+//        auto bullet = *iter;
+//        DrawRectangle(bullet->x, bullet->y, bullet->width, bullet->height, RED);
+//        bullet->y -= BULLET_VEL;
+//    }
+//}
 
-    bullets->erase(std::remove_if(
-        bullets->begin(), 
-        bullets->end(),
-        [screenWidth, screenHeight](Rectangle* bullet)->bool {
-            Vector2 bulletPos = { bullet->x, bullet->y };
-            return outOfBounds(bulletPos, screenWidth, screenHeight);
-        }), 
-        bullets->end()
-	);
+//------------------------------------------------------------------------------------
+// Render enemies
+//------------------------------------------------------------------------------------
 
-    if (bullets->size() <= 0) {
-        return;
-    }
-
-    for (iter; iter != bullets->end(); ++iter, i++) {
-        auto bullet = *iter;
-        DrawRectangle(bullet->x, bullet->y, bullet->width, bullet->height, RED);
-        bullet->y -= BULLET_VEL;
-    }
-}
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -70,11 +67,13 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 768;
-    const int screenHeight = 1024;
+    const int screenWidth = 720;
+    const int screenHeight = 960;
 
     InitWindow(screenWidth, screenHeight, "smol-invaders");
 
+    // create game manager instance - a simple ECS
+    Manager gameManager = Manager(screenWidth, screenHeight);
 
     Vector2 shipPosition = 
     { 
@@ -84,8 +83,17 @@ int main(void)
     
     // Load Textures + Create Entities
     //--------------------------------------------------------------------------------------
-    Texture2D shipTexture = LoadTexture("./resources/textures/ship.png");
     const int shipSize = 50;
+    const int enemySpriteSize = 48;
+
+    //Texture2D shipTexture = LoadTexture("./resources/textures/ship.png");
+    //Texture2D enemySpriteSheet = LoadTexture("./resources/textures/enemies.png");
+
+    const char* shipTextureLocation = "./resources/textures/ship.png";
+    const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
+
+    Player* player = new Player(shipTextureLocation, 1, 0, { shipSize, shipSize }, shipPosition, 7, 0.5, 0.2, 9.8, BULLET_PER_SECOND);
+    gameManager.addEntity(player);
 
     // vector of bullets
     std::vector<Rectangle*> bullets;
@@ -93,48 +101,32 @@ int main(void)
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
-    // Main game loop
+    // Game Stats + Misc.
+    //--------------------------------------------------------------------------------------
 	bool showHitboxes = false;
     std::chrono::steady_clock::time_point lastShotTime;
 
+    int score = 0;
+    //--------------------------------------------------------------------------------------
+     
+    // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Update
         //----------------------------------------------------------------------------------
-        Vector2 oldShipPosition = shipPosition;
-
-        if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) shipPosition.x += 7.0f;
-        if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) shipPosition.x -= 7.0f;
-        if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) shipPosition.y -= 7.0f;
-        if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) shipPosition.y += 7.0f;
-        if (IsKeyDown(KEY_H)) showHitboxes = !showHitboxes;
-
-        if (outOfBounds(shipPosition, screenWidth, screenHeight)) {
-            shipPosition = oldShipPosition;
-        }
-
-        if (IsKeyDown(KEY_SPACE)) {
-            auto now = std::chrono::high_resolution_clock::now();
-            auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastShotTime);
-            if ( timeElapsed.count() >= (float)1000 / BULLET_HEIGHT) {
-				fireWeapons(shipPosition, shipSize, &bullets);
-                lastShotTime = now;
-            }
-        }
-
-        // fire weapon(s)
-        if (IsKeyDown(KEY_SPACE)) {
-        }
+        gameManager.update();
         //----------------------------------------------------------------------------------
-
+        
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
         ClearBackground(BLACK);
 
-        std::string shipPosText = fmt::format("X: {}, Y: {}", shipPosition.x, shipPosition.y);
-        std::string numBulletsText = fmt::format("# of Bullets: {}", bullets.size());
+        gameManager.draw();
+
+        std::string shipPosText = fmt::format("X: {}, Y: {}", player->position.x, player->position.y);
+        std::string numBulletsText = fmt::format("# of entities: {}", gameManager.entities.size());
 
         Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
@@ -142,20 +134,25 @@ int main(void)
         DrawTextEx(hackNerdFontRegular, shipPosText.c_str(), { 10, 30 }, 20, 1, RAYWHITE);
         DrawTextEx(hackNerdFontRegular, numBulletsText.c_str(), { 10, 50 }, 20, 1, RAYWHITE);
         DrawFPS(10, 70);
-        
 
-        Rectangle shipSourceRec = { 0.0f, 0.0f, (float)shipSize, (float)shipSize };
-        Rectangle shipDestRec = { shipPosition.x, shipPosition.y, shipSize, shipSize};
-        Vector2 origin = { (float)shipSize/2, (float)shipSize/2 };
-        Vector2 xOffset { (float)shipSize / 2, 0};
-        Vector2 yOffset{ 0, -(float)shipSize / 2 };
+        //Rectangle shipSourceRec = { 0.0f, 0.0f, (float)shipSize, (float)shipSize };
+        //Rectangle shipDestRec = { shipPosition.x, shipPosition.y, shipSize, shipSize};
+        //Vector2 origin = { (float)shipSize/2, (float)shipSize/2 };
+        //Vector2 xOffset { (float)shipSize / 2, 0};
+        //Vector2 yOffset{ 0, -(float)shipSize / 2 };
+
+        //Rectangle enemySourceRec = { 0.0f, 0.0f, (float)enemySpriteSize, (float)enemySpriteSize };
+        //Rectangle enemyDestRec = { 125, 125, enemySpriteSize, enemySpriteSize };
+        //Vector2 enemyOrigin = { (float)enemySpriteSize /2, (float)enemySpriteSize /2 };
 
         // draw ship
-        DrawTexturePro(shipTexture, shipSourceRec, shipDestRec, origin, (float)0, WHITE);
+        //DrawTexturePro(shipTexture, shipSourceRec, shipDestRec, origin, (float)0, WHITE);
+        //// draw enemies
+        //DrawTexturePro(enemySpriteSheet, enemySourceRec, enemyDestRec, enemyOrigin, (float)0, WHITE);
         // draw bullets
-        renderBullets(&bullets, screenWidth, screenHeight);
+        //renderBullets(&bullets, screenWidth, screenHeight);
         // DrawTexture(shipTexture, shipPosition.x - origin.x, shipPosition.y - origin.y, WHITE);
-        if(showHitboxes) DrawRectangleLines(shipPosition.x - origin.x, shipPosition.y - origin.y, shipSize, shipSize, RED);
+        //if(showHitboxes) DrawRectangleLines(shipPosition.x - origin.x, shipPosition.y - origin.y, shipSize, shipSize, RED);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -163,7 +160,6 @@ int main(void)
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    UnloadTexture(shipTexture);
     CloseWindow();        // Close window and OpenGL context
     //--------------------------------------------------------------------------------------
 
