@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "raymath.h"
+#include <fmt/core.h>
 
 Player::Player(const char* _filepath, int _numFrames, int _spriteFPS, Vector2 _dimensions, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate) :
 	Entity(_filepath, _numFrames, _spriteFPS, _dimensions, _origin, PLAYER_TYPE)
@@ -32,20 +33,58 @@ void Player::update(int _screenWidth, int _screenHeight, int dt)
 {
 	Vector2 oldShipPosition = position;
 
-	Vector2 resultantVelocity = currentVelocity;
-	float resultantForce = force - (frictionCoeff * normal);
-	resultantForce = resultantForce <= 0 ? resultantForce : 0;
+	bool engineOn = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A) || 
+		IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
+	
+	std::string engineStatus = fmt::format("engine status: {}", engineOn);
+	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
-	if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) resultantVelocity.x = resultantVelocity.x + ((float)force * dt);
-	if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) resultantVelocity.x = resultantVelocity.x - ((float)force * dt);
-	if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) resultantVelocity.y = resultantVelocity.y - ((float)force * dt);
-	if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) resultantVelocity.y = resultantVelocity.y + ((float)force * dt);
+	DrawText(engineStatus.c_str(), 10, 110, 20, RAYWHITE);
+
+	Vector2 resultantVelocity = currentVelocity;
+
+	float engineForce = engineOn ? force : 0;
+
+	float resultantForce = engineForce - (frictionCoeff * normal);
+
+	if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D)) resultantVelocity.x += ((float)resultantForce * dt);
+	if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A)) resultantVelocity.x -= ((float)resultantForce * dt);
+	if (IsKeyDown(KEY_UP) || IsKeyDown(KEY_W)) resultantVelocity.y -= ((float)resultantForce * dt);
+	if (IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S)) resultantVelocity.y += ((float)resultantForce * dt);
+	if(!engineOn)
+	{
+		Vector2 resultantForceVec = Vector2Normalize(resultantVelocity);
+		resultantForceVec.x *= resultantForce;
+		resultantForceVec.y *= resultantForce;
+		resultantVelocity.x += resultantForceVec.x * dt;
+		resultantVelocity.y += resultantForceVec.y * dt;
+
+		// stop moving by friction
+		if (currentVelocity.x > 0 && resultantVelocity.x <= 0) 
+		{
+			resultantVelocity.x = 0;
+		}
+		else if (currentVelocity.x < 0 && resultantVelocity.x >= 0)
+		{
+			resultantVelocity.x = 0;
+		}
+
+		if (currentVelocity.y > 0 && resultantVelocity.y <= 0) 
+		{
+			resultantVelocity.y = 0;
+		}
+		else if (currentVelocity.y < 0 && resultantVelocity.y >= 0)
+		{
+			resultantVelocity.y = 0;
+		}
+
+	}
 
 	if (Vector2Length(resultantVelocity) >= maxVelocity)
 	{
 		resultantVelocity = Vector2Normalize(resultantVelocity);
-		resultantVelocity.x *= force;
-		resultantVelocity.y *= force;
+		resultantVelocity.x *= maxVelocity;
+		resultantVelocity.y *= maxVelocity;
 	}
 
 	Vector2 positionDelta = { resultantVelocity.x * dt, resultantVelocity.y * dt };

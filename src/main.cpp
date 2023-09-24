@@ -91,14 +91,15 @@ int main(void)
 
     const char* shipTextureLocation = "./resources/textures/ship.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
+	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
-    Player* player = new Player(shipTextureLocation, 1, 0, { shipSize, shipSize }, shipPosition, 7, 0.5, 0.2, 9.8, BULLET_PER_SECOND);
+    Player* player = new Player(shipTextureLocation, 1, 0, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND);
     gameManager.addEntity(player);
 
     // vector of bullets
     std::vector<Rectangle*> bullets;
 
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
+    SetTargetFPS(120);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Game Stats + Misc.
@@ -127,13 +128,13 @@ int main(void)
 
         std::string shipPosText = fmt::format("X: {}, Y: {}", player->position.x, player->position.y);
         std::string numBulletsText = fmt::format("# of entities: {}", gameManager.entities.size());
-
-        Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
+        std::string velocityText = fmt::format("ship velocity: X: {}, y: {}", player->currentVelocity.x, player->currentVelocity.y);
 
         DrawTextEx(hackNerdFontRegular, "move the ship with arrow keys", { 10, 10}, 20, 1, RAYWHITE);
         DrawTextEx(hackNerdFontRegular, shipPosText.c_str(), { 10, 30 }, 20, 1, RAYWHITE);
         DrawTextEx(hackNerdFontRegular, numBulletsText.c_str(), { 10, 50 }, 20, 1, RAYWHITE);
-        DrawFPS(10, 70);
+        DrawTextEx(hackNerdFontRegular, velocityText.c_str(), { 10, 70 }, 20, 1, RAYWHITE);
+        DrawFPS(10, 90);
 
         //Rectangle shipSourceRec = { 0.0f, 0.0f, (float)shipSize, (float)shipSize };
         //Rectangle shipDestRec = { shipPosition.x, shipPosition.y, shipSize, shipSize};
