@@ -12,7 +12,7 @@
 #define BULLET_HEIGHT 10
 #define BULLET_WIDTH 5
 #define BULLET_VEL 5
-#define BULLET_PER_SECOND 2
+#define BULLET_PER_SECOND 5
 
 //------------------------------------------------------------------------------------
 // fire weapons
@@ -91,10 +91,15 @@ int main(void)
 
     const char* shipTextureLocation = "./resources/textures/ship.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
+    const char* defaultBulletSpriteSheetLocation = "./resources/textures/yellow_bullets.png";
+
+    Texture2D shipTexture = LoadTexture(shipTextureLocation);
+    Texture2D defaultBulletSheet = LoadTexture(defaultBulletSpriteSheetLocation);
 	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
-    Player* player = new Player(shipTextureLocation, 1, 0, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND);
-    gameManager.addEntity(player);
+    Player* player = new Player(shipTexture, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND);
+    Entity* newEntity = static_cast<Entity*>(player);
+    gameManager.addEntity(newEntity);
 
     // vector of bullets
     std::vector<Rectangle*> bullets;
@@ -127,7 +132,15 @@ int main(void)
         gameManager.draw();
 
         std::string shipPosText = fmt::format("X: {}, Y: {}", player->position.x, player->position.y);
-        std::string numBulletsText = fmt::format("# of entities: {}", gameManager.entities.size());
+
+        int bulletCount = 0;
+		for (auto kv : gameManager.entities) {
+			if (kv.second->type == EntityType::PLAYER_BULLET) {
+				bulletCount++;
+			}
+		}
+
+        std::string numBulletsText = fmt::format("# of entities: {}, # of bullets: {}", gameManager.entities.size(), bulletCount);
         std::string velocityText = fmt::format("ship velocity: X: {}, y: {}", player->currentVelocity.x, player->currentVelocity.y);
 
         DrawTextEx(hackNerdFontRegular, "move the ship with arrow keys", { 10, 10}, 20, 1, RAYWHITE);
