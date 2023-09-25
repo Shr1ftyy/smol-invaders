@@ -1,6 +1,7 @@
 #ifndef MANAGER
 #define MANAGER
 #include "Player.h"
+#include <string>
 
 struct Manager
 {
@@ -8,12 +9,13 @@ struct Manager
 	int screenHeight;
 	// game clock -> used for physics
 	std::chrono::steady_clock::time_point lastUpdateTime;
-	EntityVec entities;
-	std::vector<void*>* events;
+	std::chrono::steady_clock::time_point lastDrawTime;
+	EntityMap entities;
+	// EventMap events;
 
 	Manager(int _screenWidth, int _screenHeight);
 	void addEntity(Entity* _entity);
-	void addEntity(Player* _entity);
+	void deleteEntity(EntityId _id);
 	void update();
 	void draw();
 };

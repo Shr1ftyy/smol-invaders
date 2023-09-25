@@ -1,8 +1,10 @@
 #ifndef ENTITY
 #define ENTITY
 #include "raylib.h"
-#include "vector"
+#include <unordered_map>
 #include <chrono>
+
+struct Manager;
 
 enum EntityType
 {
@@ -12,22 +14,23 @@ enum EntityType
 	ENEMY_BULLET
 };
 
+using EntityId =  unsigned int;
+using EventMap = std::unordered_map<EntityId, std::vector<void*>*>*;
+
 struct Entity
 {
+	static EntityId newId;
+	EntityId id;
 	Texture2D spriteSheet;
-	int numFrames;
-	int spriteFPS;
-	int spriteIndex;
 	Vector2 dimensions;
 	Vector2 position;
 	EntityType type;
-	std::chrono::steady_clock::time_point lastFrameUpdateTime;
 
-	Entity(const char* _filepath, int _numFrames, int _spriteFPS, Vector2 _dimensions, Vector2 _origin, EntityType _entityType);
+	Entity(Texture2D _spriteSheet, Vector2 _dimensions, Vector2 _origin, EntityType _entityType);
 	void update();
 	void draw();
 };
 
-using EntityVec = std::vector<Entity*>;
+using EntityMap = std::unordered_map<EntityId, Entity*>;
 
 #endif // ENTITY

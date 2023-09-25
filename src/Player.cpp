@@ -1,9 +1,11 @@
 #include "Player.h"
+#include "Manager.h"
+#include "Bullet.h"
 #include "raymath.h"
 #include <fmt/core.h>
 
-Player::Player(const char* _filepath, int _numFrames, int _spriteFPS, Vector2 _dimensions, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate) :
-	Entity(_filepath, _numFrames, _spriteFPS, _dimensions, _origin, PLAYER_TYPE)
+Player::Player(Texture2D _spriteSheet, Texture2D _defaultBulletSheet,  Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _dimensions, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate) :
+	Entity(_spriteSheet, _dimensions, _origin, EntityType::PLAYER_TYPE)
 {
 	currentVelocity = { 0, 0 };
 	maxVelocity = _maxVelocity;
@@ -11,6 +13,11 @@ Player::Player(const char* _filepath, int _numFrames, int _spriteFPS, Vector2 _d
 	frictionCoeff = _frictionCoeff;
 	normal = _normal;
 	fireRate = _fireRate;
+
+	numFrames = _numFrames;
+	src = _src;
+	indexingVec = _indexingVec;
+	defaultBulletSheet = _defaultBulletSheet;
 }
 
 //------------------------------------------------------------------------------------
@@ -25,19 +32,25 @@ bool Player::outOfBounds(Vector2 entity, int screenWidth, int screenHeight)
 	return false;
 }
 
+void Player::fireDefault(Manager* _manager) {
+	Vector2 bulletDims = { 32, 32 };
+	float bulletX = position.x;
+	float bulletY = position.y - (dimensions.y / 2);
+	Bullet* bullet = new Bullet(defaultBulletSheet, { 192, 64 }, { 32, 0 }, 4, 30, bulletDims, { bulletX, bulletY }, { 0, -5 });
+	_manager->addEntity(bullet);
+}
 
 //------------------------------------------------------------------------------------
 // Update player
 //------------------------------------------------------------------------------------
-void Player::update(int _screenWidth, int _screenHeight, int dt)
+void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, int dt)
 {
 	Vector2 oldShipPosition = position;
 
 	bool engineOn = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A) || 
 		IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
-	
+
 	std::string engineStatus = fmt::format("engine status: {}", engineOn);
-	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
 	DrawText(engineStatus.c_str(), 10, 110, 20, RAYWHITE);
 
@@ -86,7 +99,7 @@ void Player::update(int _screenWidth, int _screenHeight, int dt)
 		resultantVelocity.x *= maxVelocity;
 		resultantVelocity.y *= maxVelocity;
 	}
-
+	
 	Vector2 positionDelta = { resultantVelocity.x * dt, resultantVelocity.y * dt };
 	position = Vector2Add(position, positionDelta);
 
@@ -100,13 +113,13 @@ void Player::update(int _screenWidth, int _screenHeight, int dt)
 	currentVelocity = resultantVelocity;
 
 	// fire weapon(s)
-	//if (IsKeyDown(KEY_SPACE)) {
-	//	auto now = std::chrono::high_resolution_clock::now();
-	//	auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastShotTime);
-	//	if (timeElapsed.count() >= (float)1000 / BULLET_HEIGHT) {
-	//		fireWeapons(shipPosition, shipSize, &bullets);
-	//		lastShotTime = now;
-	//	}
-	//}
+	if (IsKeyDown(KEY_SPACE)) {
+		auto now = std::chrono::high_resolution_clock::now();
+		auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastShotTime);
+		if (timeElapsed.count() >= (float)1000 / fireRate) {
+			fireDefault(_manager);
+			lastShotTime = now;
+		}
+	}
 
 }
