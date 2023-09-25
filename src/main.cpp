@@ -12,7 +12,7 @@
 #define BULLET_HEIGHT 10
 #define BULLET_WIDTH 5
 #define BULLET_VEL 5
-#define BULLET_PER_SECOND 5
+#define BULLET_PER_SECOND 3
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -40,15 +40,15 @@ int main(void)
     const int shipSize = 50;
     const int enemySpriteSize = 48;
 
-    const char* shipTextureLocation = "./resources/textures/ship.png";
+    const char* shipTextureLocation = "./resources/textures/ship2.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
     const char* defaultBulletSpriteSheetLocation = "./resources/textures/yellow_bullets.png";
 
     Texture2D shipTexture = LoadTexture(shipTextureLocation);
     Texture2D defaultBulletSheet = LoadTexture(defaultBulletSpriteSheetLocation);
-	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
+    Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
-    Player* player = new Player(shipTexture, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND);
+    Player* player = new Player(shipTexture, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3);
     Entity* newEntity = static_cast<Entity*>(player);
     gameManager.addEntity(newEntity);
 
@@ -60,7 +60,7 @@ int main(void)
 
     // Game Stats + Misc.
     //--------------------------------------------------------------------------------------
-	bool showHitboxes = false;
+    bool showHitboxes = false;
     std::chrono::steady_clock::time_point lastShotTime;
 
     int score = 0;
@@ -85,11 +85,11 @@ int main(void)
         std::string shipPosText = fmt::format("X: {}, Y: {}", player->position.x, player->position.y);
 
         int bulletCount = 0;
-		for (auto kv : gameManager.entities) {
-			if (kv.second->type == EntityType::PLAYER_BULLET) {
-				bulletCount++;
-			}
-		}
+        for (auto kv : gameManager.entities) {
+            if (kv.second->type == EntityType::PLAYER_BULLET) {
+                bulletCount++;
+            }
+        }
 
         std::string numBulletsText = fmt::format("# of entities: {}, # of bullets: {}", gameManager.entities.size(), bulletCount);
         std::string velocityText = fmt::format("ship velocity: X: {}, y: {}", player->currentVelocity.x, player->currentVelocity.y);

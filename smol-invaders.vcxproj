@@ -23,6 +23,7 @@
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\Manager.h" />
     <ClInclude Include="src\Player.h" />
+    <ClInclude Include="src\SimpleEnemy.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Bullet.cpp" />
@@ -30,9 +31,11 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Manager.cpp" />
     <ClCompile Include="src\Player.cpp" />
+    <ClCompile Include="src\SimpleEnemy.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
