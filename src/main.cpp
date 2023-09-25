@@ -15,52 +15,6 @@
 #define BULLET_PER_SECOND 5
 
 //------------------------------------------------------------------------------------
-// fire weapons
-//------------------------------------------------------------------------------------
-void fireWeapons(Vector2 shipOrigin, int shipSize, std::vector<Rectangle*>* bullets) {
-    Rectangle* newBullet = new Rectangle;
-    newBullet->x = shipOrigin.x - BULLET_WIDTH / 2;
-    newBullet->y = shipOrigin.y - (shipSize / 2) - BULLET_HEIGHT;
-    newBullet->width = BULLET_WIDTH;
-    newBullet->height = BULLET_HEIGHT;
-    
-    bullets->push_back(newBullet);
-}
-
-//------------------------------------------------------------------------------------
-// Render bullets
-//------------------------------------------------------------------------------------
-//void renderBullets(std::vector<Rectangle*>* bullets, int screenWidth, int screenHeight) {
-//    std::vector<Rectangle*>::iterator iter = bullets->begin();
-//    int i = 0;  // counter.
-//
-//    bullets->erase(std::remove_if(
-//        bullets->begin(), 
-//        bullets->end(),
-//        [screenWidth, screenHeight](Rectangle* bullet)->bool {
-//            Vector2 bulletPos = { bullet->x, bullet->y };
-//            return outOfBounds(bulletPos, screenWidth, screenHeight);
-//        }), 
-//        bullets->end()
-//	);
-//
-//    if (bullets->size() <= 0) {
-//        return;
-//    }
-//
-//    for (iter; iter != bullets->end(); ++iter, i++) {
-//        auto bullet = *iter;
-//        DrawRectangle(bullet->x, bullet->y, bullet->width, bullet->height, RED);
-//        bullet->y -= BULLET_VEL;
-//    }
-//}
-
-//------------------------------------------------------------------------------------
-// Render enemies
-//------------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void)
@@ -85,9 +39,6 @@ int main(void)
     //--------------------------------------------------------------------------------------
     const int shipSize = 50;
     const int enemySpriteSize = 48;
-
-    //Texture2D shipTexture = LoadTexture("./resources/textures/ship.png");
-    //Texture2D enemySpriteSheet = LoadTexture("./resources/textures/enemies.png");
 
     const char* shipTextureLocation = "./resources/textures/ship.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
@@ -148,25 +99,6 @@ int main(void)
         DrawTextEx(hackNerdFontRegular, numBulletsText.c_str(), { 10, 50 }, 20, 1, RAYWHITE);
         DrawTextEx(hackNerdFontRegular, velocityText.c_str(), { 10, 70 }, 20, 1, RAYWHITE);
         DrawFPS(10, 90);
-
-        //Rectangle shipSourceRec = { 0.0f, 0.0f, (float)shipSize, (float)shipSize };
-        //Rectangle shipDestRec = { shipPosition.x, shipPosition.y, shipSize, shipSize};
-        //Vector2 origin = { (float)shipSize/2, (float)shipSize/2 };
-        //Vector2 xOffset { (float)shipSize / 2, 0};
-        //Vector2 yOffset{ 0, -(float)shipSize / 2 };
-
-        //Rectangle enemySourceRec = { 0.0f, 0.0f, (float)enemySpriteSize, (float)enemySpriteSize };
-        //Rectangle enemyDestRec = { 125, 125, enemySpriteSize, enemySpriteSize };
-        //Vector2 enemyOrigin = { (float)enemySpriteSize /2, (float)enemySpriteSize /2 };
-
-        // draw ship
-        //DrawTexturePro(shipTexture, shipSourceRec, shipDestRec, origin, (float)0, WHITE);
-        //// draw enemies
-        //DrawTexturePro(enemySpriteSheet, enemySourceRec, enemyDestRec, enemyOrigin, (float)0, WHITE);
-        // draw bullets
-        //renderBullets(&bullets, screenWidth, screenHeight);
-        // DrawTexture(shipTexture, shipPosition.x - origin.x, shipPosition.y - origin.y, WHITE);
-        //if(showHitboxes) DrawRectangleLines(shipPosition.x - origin.x, shipPosition.y - origin.y, shipSize, shipSize, RED);
 
         EndDrawing();
         //----------------------------------------------------------------------------------
