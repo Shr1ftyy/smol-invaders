@@ -4,9 +4,10 @@
 #include "raymath.h"
 #include <fmt/core.h>
 
-Player::Player(Texture2D _spriteSheet, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
+Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
     Entity(_spriteSheet, _textureDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
 {
+    defaultFireSound = _defaultFireSound;
     currentVelocity = { 0, 0 };
     maxVelocity = _maxVelocity;
     force = _force;
@@ -41,6 +42,7 @@ void Player::fireDefault(Manager* _manager)
     float bulletY = position.y - (hitboxDims.y / 2);
     Bullet* bullet = new Bullet(defaultBulletSheet, { 192, 64 }, { 32, 0 }, 4, 30, bulletTextureDims, buletHitboxDims, { bulletX, bulletY }, { 0, -5 }, 5);
     _manager->addEntity(bullet);
+    PlaySound(defaultFireSound);
 }
 
 //------------------------------------------------------------------------------------

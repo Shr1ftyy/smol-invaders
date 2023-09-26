@@ -26,6 +26,8 @@ int main(void)
     const int screenHeight = 960;
 
     InitWindow(screenWidth, screenHeight, "smol-invaders");
+    InitAudioDevice();
+    SetMasterVolume(0.3);
 
     // create game manager instance - a simple ECS
     Manager gameManager = Manager(screenWidth, screenHeight);
@@ -41,19 +43,29 @@ int main(void)
     const int shipSize = 50;
     const int enemySpriteSize = 48;
 
+    // Resources - Textures, Sounds, etc.
     const char* shipTextureLocation = "./resources/textures/ship2.png";
     const char* defaultBulletSpriteSheetLocation = "./resources/textures/yellow_bullets.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
+    
+    const char* defaultFireSoundLocation = "./resources/sounds/shoot.wav";
+    const char* enemyExplosionSoundLocation = "./resources/sounds/invaderkilled.wav";
 
     Texture2D shipTexture = LoadTexture(shipTextureLocation);
     Texture2D defaultBulletSheet = LoadTexture(defaultBulletSpriteSheetLocation);
     Texture2D enemyTexture = LoadTexture(enemySpriteSheetLocation);
+    
+    Wave defaultFireWave = LoadWave(defaultFireSoundLocation);
+    Sound defaultFireSound = LoadSoundFromWave(defaultFireWave);
+    
+    Wave enemyExplosionWave = LoadWave(enemyExplosionSoundLocation);
+    Sound enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
 
 	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
-    Player* player = new Player(shipTexture, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3.0);
+    Player* player = new Player(shipTexture, defaultFireSound, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3.0);
     Entity* newEntity = static_cast<Entity*>(player);
-    SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, { 0, 0 }, { 32, 0 }, 3, 30, { 32, 32 }, { 32, 32 }, { shipPosition.x, shipPosition.y - 100 }, 10);
+    SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, { 0, 0 }, { 32, 0 }, 3, 30, { 32, 32 }, { 32, 32 }, { shipPosition.x, shipPosition.y - 100 }, 10);
     Entity* newEntity1 = static_cast<Entity*>(enemy);
     
     gameManager.addEntity(newEntity);

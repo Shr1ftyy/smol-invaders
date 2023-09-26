@@ -6,6 +6,9 @@ struct Manager; // Forward declaration of Manager
 
 struct Player : Entity
 {
+    // default bullet firing sound
+    Sound defaultFireSound;
+    // last time bullet was shot
     std::chrono::steady_clock::time_point lastShotTime;
     // force produced by thrusters
     float force;
@@ -30,7 +33,7 @@ struct Player : Entity
     // health points
     float hp;
 
-    Player(Texture2D _spriteSheet, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp);
+    Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp);
     bool outOfBounds(Vector2 entity, int screenWidth, int screenHeight);
     void update(Manager* _manager, int _screenWidth, int _screenHeight, int dt);
     void fireDefault(Manager* _manager);
