@@ -1,0 +1,5 @@
+25 September 2023, 22:46:15: File change: {"C:/Users/Syeam/Desktop/coding/cpp/smol-invaders/smol-invaders/temp/session_16a12_1bdda5d7c18a1500/log.txt", ADDED, 0.053482} - ignore because of dir
+25 September 2023, 22:46:15: File change: {"C:/Users/Syeam/Desktop/coding/cpp/smol-invaders/smol-invaders/temp/session_16a12_1bdda5d7c18a1500/log_error.txt", ADDED, 0.053572} - ignore because of dir
+25 September 2023, 22:46:15: File change: {"C:/Users/Syeam/Desktop/coding/cpp/smol-invaders/smol-invaders/temp/session_16a12_1bdda5d7c18a1500", ADDED | MODIFIED | SCAN_CHILDREN, 0.056535} - ignore because of dir
+25 September 2023, 22:46:49: File change: {"C:/Users/Syeam/Desktop/coding/cpp/smol-invaders/smol-invaders/focus.exe", REMOVED, 33.805115} - ignore because of parent dir
+25 September 2023, 22:46:49: File change: {"C:/Users/Syeam/Desktop/coding/cpp/smol-invaders/smol-invaders/global.focus-config", REMOVED, 33.808125} | dirs_to_rescan: none
