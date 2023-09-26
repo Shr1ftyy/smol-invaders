@@ -30,7 +30,7 @@ struct Player : Entity
     // health points
     float hp;
 
-    Player(Texture2D _spriteSheet, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _dimensions, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp);
+    Player(Texture2D _spriteSheet, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp);
     bool outOfBounds(Vector2 entity, int screenWidth, int screenHeight);
     void update(Manager* _manager, int _screenWidth, int _screenHeight, int dt);
     void fireDefault(Manager* _manager);

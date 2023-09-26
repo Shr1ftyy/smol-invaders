@@ -1,29 +1,11 @@
 #ifndef SIMPLE_ENEMY
 #define SIMPLE_ENEMY
 
-#include "Entity.h"
+#include "Enemy.h"
 
-struct Manager;
-
-struct SimpleEnemy : Entity
+struct SimpleEnemy : Enemy
 {
-    // coords of first image of spritesheet for player
-    Vector2 src;
-    // indexing vector for rest of images
-    Vector2 indexingVec;
-    // current frame index
-    int currentIndex;
-    // current frame pos
-    Vector2 currentFramePos;
-    // time since last update (ms)
-    int timeSinceLastDraw;
-    // health points
-    float hp;
-
-    SimpleEnemy(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _dimensions, Vector2 _origin, float _hp);
-    void update();
-    void draw();
-    void outOfBounds(Manager* _manager);
+    SimpleEnemy(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _hp);
 };
 
 #endif // SIMPLE_ENEMY

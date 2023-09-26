@@ -4,8 +4,8 @@
 #include "raymath.h"
 #include <fmt/core.h>
 
-Player::Player(Texture2D _spriteSheet, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _dimensions, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
-    Entity(_spriteSheet, _dimensions, _origin, EntityType::PLAYER_TYPE)
+Player::Player(Texture2D _spriteSheet, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
+    Entity(_spriteSheet, _textureDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
 {
     currentVelocity = { 0, 0 };
     maxVelocity = _maxVelocity;
@@ -35,10 +35,11 @@ bool Player::outOfBounds(Vector2 entity, int screenWidth, int screenHeight)
 
 void Player::fireDefault(Manager* _manager)
 {
-    Vector2 bulletDims = { 32, 32 };
+    Vector2 bulletTextureDims = { 32, 32 };
+    Vector2 buletHitboxDims = {15, 15};
     float bulletX = position.x;
-    float bulletY = position.y - (dimensions.y / 2);
-    Bullet* bullet = new Bullet(defaultBulletSheet, { 192, 64 }, { 32, 0 }, 4, 30, bulletDims, { bulletX, bulletY }, { 0, -5 });
+    float bulletY = position.y - (hitboxDims.y / 2);
+    Bullet* bullet = new Bullet(defaultBulletSheet, { 192, 64 }, { 32, 0 }, 4, 30, bulletTextureDims, buletHitboxDims, { bulletX, bulletY }, { 0, -5 }, 5);
     _manager->addEntity(bullet);
 }
 

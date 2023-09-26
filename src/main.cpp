@@ -8,6 +8,7 @@
 
 #include "Manager.h"
 #include "Player.h"
+#include "SimpleEnemy.h"
 
 #define BULLET_HEIGHT 10
 #define BULLET_WIDTH 5
@@ -41,16 +42,22 @@ int main(void)
     const int enemySpriteSize = 48;
 
     const char* shipTextureLocation = "./resources/textures/ship2.png";
-    const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
     const char* defaultBulletSpriteSheetLocation = "./resources/textures/yellow_bullets.png";
+    const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
 
     Texture2D shipTexture = LoadTexture(shipTextureLocation);
     Texture2D defaultBulletSheet = LoadTexture(defaultBulletSpriteSheetLocation);
-    Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
+    Texture2D enemyTexture = LoadTexture(enemySpriteSheetLocation);
 
-    Player* player = new Player(shipTexture, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3);
+	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
+
+    Player* player = new Player(shipTexture, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3.0);
     Entity* newEntity = static_cast<Entity*>(player);
+    SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, { 0, 0 }, { 32, 0 }, 3, 30, { 32, 32 }, { 32, 32 }, { shipPosition.x, shipPosition.y - 100 }, 10);
+    Entity* newEntity1 = static_cast<Entity*>(enemy);
+    
     gameManager.addEntity(newEntity);
+    gameManager.addEntity(newEntity1);
 
     // vector of bullets
     std::vector<Rectangle*> bullets;
@@ -60,7 +67,7 @@ int main(void)
 
     // Game Stats + Misc.
     //--------------------------------------------------------------------------------------
-    bool showHitboxes = false;
+	bool showHitboxes = false;
     std::chrono::steady_clock::time_point lastShotTime;
 
     int score = 0;
@@ -78,7 +85,7 @@ int main(void)
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
-        ClearBackground(BLACK);
+        ClearBackground({8, 36, 52, 255});
 
         gameManager.draw();
 

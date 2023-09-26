@@ -1,7 +1,9 @@
 #ifndef MANAGER
 #define MANAGER
+
 #include "Player.h"
-#include <string>
+#include "Bullet.h"
+#include "Enemy.h"
 
 struct Manager
 {

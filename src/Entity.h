@@ -4,8 +4,6 @@
 #include <unordered_map>
 #include <chrono>
 
-struct Manager;
-
 enum EntityType
 {
     PLAYER_TYPE,
@@ -22,11 +20,12 @@ struct Entity
     static EntityId newId;
     EntityId id;
     Texture2D spriteSheet;
-    Vector2 dimensions;
+    Vector2 textureDims;
+    Vector2 hitboxDims;
     Vector2 position;
     EntityType type;
 
-    Entity(Texture2D _spriteSheet, Vector2 _dimensions, Vector2 _origin, EntityType _entityType);
+    Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, EntityType _entityType);
     void update();
     void draw();
 };
