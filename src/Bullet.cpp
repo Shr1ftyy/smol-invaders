@@ -33,7 +33,7 @@ void Bullet::update(Manager* _manager, float dt)
     {
         position = Vector2Add(position, displacement);
         if (outOfBounds(_manager->screenWidth, _manager->screenHeight))
-            _manager->deleteEntity(id);
+            destroyed = true;
     }
 }
 
