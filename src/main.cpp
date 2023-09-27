@@ -46,7 +46,7 @@ int main(void)
     // const int enemySpriteSize = 50;
 
     // Resources - Textures, Sounds, etc.
-    const char* shipTextureLocation = "./resources/textures/ship4.png";
+    const char* shipTextureLocation = "./resources/textures/ship6.png";
     const char* defaultBulletSpriteSheetLocation = "./resources/textures/yellow_bullets.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
 
@@ -94,7 +94,7 @@ int main(void)
 
     gameManager.addEntity(newEntity);
 
-    for (int i = 0; i < 11; i++)
+    for (int i = 0; i < 51; i++)
     {
         // Define the distribution for the random integer within the range
         std::uniform_int_distribution<int> distribution(min_value, max_value);
@@ -112,7 +112,7 @@ int main(void)
     // vector of bullets
     std::vector<Rectangle*> bullets;
 
-    SetTargetFPS(30); // Set our game to run at 60 frames-per-second
+    SetTargetFPS(120); // Set our game to run at 60 frames-per-second
                        //--------------------------------------------------------------------------------------
 
     // Game Stats + Misc.
