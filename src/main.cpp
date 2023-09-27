@@ -94,7 +94,7 @@ int main(void)
 
     gameManager.addEntity(newEntity);
 
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 11; i++)
     {
         // Define the distribution for the random integer within the range
         std::uniform_int_distribution<int> distribution(min_value, max_value);
@@ -103,7 +103,7 @@ int main(void)
         int X = distribution(rng);
         int Y = distribution(rng);
 
-        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, {0, 0}, {32.0, 0.0}, 3, 1.0, {32.0, 32.0}, {50.0, 50.0}, {50.0, 50.0}, {(float)X, (float)Y}, 10);
+        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, {0.0, 0.0}, {32.0, 0.0}, 3, 2.0, {32.0, 32.0}, {50.0, 50.0}, {50.0, 50.0}, {(float)X, (float)Y}, 10);
         Entity* newEnemy = static_cast<Entity*>(enemy);
 
         gameManager.addEntity(newEnemy);
@@ -112,7 +112,7 @@ int main(void)
     // vector of bullets
     std::vector<Rectangle*> bullets;
 
-    SetTargetFPS(120); // Set our game to run at 60 frames-per-second
+    SetTargetFPS(30); // Set our game to run at 60 frames-per-second
                        //--------------------------------------------------------------------------------------
 
     // Game Stats + Misc.

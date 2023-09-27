@@ -83,7 +83,7 @@ void Manager::update()
                 ++it;
             continue;
         }
-        if (entity->type == EntityType::ENEMY_TYPE)
+        else if (entity->type == EntityType::ENEMY_TYPE)
         {
             Enemy* enemy = static_cast<Enemy*>(entity);
             if (enemy->destroyed)

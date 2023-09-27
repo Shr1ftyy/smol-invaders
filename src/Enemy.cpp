@@ -10,6 +10,7 @@ Enemy::Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _i
     src = _src;
     indexingVec = _indexingVec;
     currentIndex = 0;
+    numFrames = _numFrames;
     timeSinceLastDraw = 0;
     currentFramePos = _src;
     hp = _hp;
@@ -34,14 +35,10 @@ void Enemy::draw(float dt)
 
     timeSinceLastDraw += dt;
     std::cout << "timeSinceLastDraw: " << timeSinceLastDraw << std::endl;
-    // currentIndex++;
-    if (currentIndex >= numFrames)
-    {
-        currentIndex = 0;
-    }
-
+    
     if (timeSinceLastDraw >= (float)1000 / spriteFPS)
     {
+        std::cout << "updating sprite..." << std::endl;
         currentIndex++;
         if (currentIndex >= numFrames)
         {
@@ -52,13 +49,15 @@ void Enemy::draw(float dt)
         currentFramePos = Vector2Add(src, offset);
 
         timeSinceLastDraw = 0;
-        std::cout << currentIndex << std::endl;
     }
 
     Rectangle srcRec = {currentFramePos.x, currentFramePos.y, textureDims.x, textureDims.y};
     Rectangle destRec = {position.x, position.y, outputDims.x, outputDims.y};
     Vector2 textureOrigin = {(float)textureDims.x / 2, (float)textureDims.y / 2};
-    std::cout << currentIndex << std::endl;
+    
+    std::cout << currentIndex << " " << numFrames << std::endl;
+    std::cout << currentFramePos.x << " " << currentFramePos.y << std::endl;
+
     DrawTexturePro(spriteSheet, srcRec, destRec, textureOrigin, (float)0, WHITE);
     std::cout << "drawn" << std::endl;
 
