@@ -42,11 +42,11 @@ int main(void)
     
     // Load Textures + Create Entities
     //--------------------------------------------------------------------------------------
-    const int shipSize = 50;
-    const int enemySpriteSize = 48;
+    const int shipSize = 64;
+    // const int enemySpriteSize = 50;
 
     // Resources - Textures, Sounds, etc.
-    const char* shipTextureLocation = "./resources/textures/ship2.png";
+    const char* shipTextureLocation = "./resources/textures/ship4.png";
     const char* defaultBulletSpriteSheetLocation = "./resources/textures/yellow_bullets.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
     
@@ -72,7 +72,7 @@ int main(void)
     std::random_device rd;  // Seed for the random number generator
     std::mt19937 rng(rd()); // Mersenne Twister pseudo-random generator
 
-    Player* player = new Player(shipTexture, defaultFireSound, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3.0);
+    Player* player = new Player(shipTexture, defaultFireSound, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipTexture.width, shipTexture.height }, { shipSize, shipSize }, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3.0);
     Entity* newEntity = static_cast<Entity*>(player);
     
     gameManager.addEntity(newEntity);
@@ -86,7 +86,7 @@ int main(void)
         int X = distribution(rng);
         int Y = distribution(rng);
         
-        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, { 0, 0 }, { 32, 0 }, 3, 30, { 32, 32 }, { 32, 32 }, { (float)X, (float)Y }, 10);
+        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, { 0, 0 }, { 32, 0 }, 3, 30, { 32, 32 }, { 50, 50 }, { 50, 50 }, { (float)X, (float)Y }, 10);
         Entity* newEnemy = static_cast<Entity*>(enemy);
         
         gameManager.addEntity(newEnemy);

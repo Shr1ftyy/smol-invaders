@@ -22,11 +22,12 @@ struct Entity
     EntityId id;
     Texture2D spriteSheet;
     Vector2 textureDims;
+    Vector2 outputDims;
     Vector2 hitboxDims;
     Vector2 position;
     EntityType type;
 
-    Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, EntityType _entityType);
+    Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, EntityType _entityType);
     void update();
     void draw();
 };

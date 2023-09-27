@@ -2,8 +2,8 @@
 #include "Manager.h"
 #include "raymath.h"
 
-Bullet::Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, Vector2 _velocity, float _dmg) :
-    Entity(_spriteSheet, _textureDims, _hitboxDims, _origin, EntityType::PLAYER_BULLET)
+Bullet::Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, Vector2 _velocity, float _dmg) :
+    Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_BULLET)
 {
     numFrames = _numFrames;
     spriteFPS = _spriteFPS;
