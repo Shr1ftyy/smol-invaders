@@ -1,15 +1,16 @@
+#define FMT_HEADER_ONLY
+
 #include "Manager.h"
 #include "Player.h"
 #include "SimpleEnemy.h"
 
-#define FMT_HEADER_ONLY
-#include <fmt/core.h>
 #include "raylib.h"
 #include "raymath.h"
-
-#include <chrono>
 #include <iostream>
+#include <fmt/core.h>
+#include <chrono>
 #include <vector>
+#include <random>
 
 #define BULLET_HEIGHT 10
 #define BULLET_WIDTH 5
@@ -28,7 +29,7 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "smol-invaders");
     InitAudioDevice();
-    SetMasterVolume(0.3);
+    SetMasterVolume(0.1);
 
     // create game manager instance - a simple ECS
     Manager gameManager = Manager(screenWidth, screenHeight);
@@ -63,14 +64,34 @@ int main(void)
     Sound enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
 
 	Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
+	
+    int min_value = 250;
+    int max_value = 500;
+    
+    // Initialize a random number generator
+    std::random_device rd;  // Seed for the random number generator
+    std::mt19937 rng(rd()); // Mersenne Twister pseudo-random generator
 
     Player* player = new Player(shipTexture, defaultFireSound, defaultBulletSheet, { 0, 0 }, { 0, 0 }, 1, 0, { shipSize, shipSize }, { shipSize, shipSize }, shipPosition, 0.5, 0.01, 0.0001, 9.8, BULLET_PER_SECOND, 3.0);
     Entity* newEntity = static_cast<Entity*>(player);
-    SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, { 0, 0 }, { 32, 0 }, 3, 30, { 32, 32 }, { 32, 32 }, { shipPosition.x, shipPosition.y - 100 }, 10);
-    Entity* newEntity1 = static_cast<Entity*>(enemy);
     
     gameManager.addEntity(newEntity);
-    gameManager.addEntity(newEntity1);
+
+    for(int i=0; i<21; i++)
+    {
+        // Define the distribution for the random integer within the range
+        std::uniform_int_distribution<int> distribution(min_value, max_value);
+        
+        // Generate a random integer within the specified range
+        int X = distribution(rng);
+        int Y = distribution(rng);
+        
+        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, { 0, 0 }, { 32, 0 }, 3, 30, { 32, 32 }, { 32, 32 }, { (float)X, (float)Y }, 10);
+        Entity* newEnemy = static_cast<Entity*>(enemy);
+        
+        gameManager.addEntity(newEnemy);
+    }
+        
 
     // vector of bullets
     std::vector<Rectangle*> bullets;

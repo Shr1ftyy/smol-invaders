@@ -1,5 +1,8 @@
 #include "Manager.h"
 
+#include <algorithm>
+#include <chrono>
+
 Manager::Manager(int _screenWidth, int _screenHeight)
 {
     screenWidth = _screenWidth;
@@ -18,7 +21,7 @@ void Manager::deleteEntity(EntityId _id)
 
 void Manager::update()
 {
-    auto now = std::chrono::steady_clock::now();
+    auto now = std::chrono::system_clock::now();
     auto elapsed = now - lastUpdateTime;
     int dt = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
     lastUpdateTime = now;
@@ -34,7 +37,7 @@ void Manager::update()
             // check if colliding with player bullets
             for (auto e: entities) {
                 auto b = e.second;
-                if(b->type == EntityType::PLAYER_BULLET) {
+                if (b->type == EntityType::PLAYER_BULLET) {
                     Bullet* bullet = static_cast<Bullet*>(b);
                     
                     Rectangle bulletHitbox = 
@@ -53,9 +56,11 @@ void Manager::update()
                     };
                     
                     
-                    if(CheckCollisionRecs(bulletHitbox, enemyHitbox))
+                    if (CheckCollisionRecs(bulletHitbox, enemyHitbox))
                     {
                         enemy->hp -= bullet->dmg;
+                        bullet->exploding=true;
+                        bullet->hitboxDims = { 0, 0 };
                     }
                 }
             }
@@ -89,10 +94,29 @@ void Manager::update()
 
 void Manager::draw()
 {
-    auto now = std::chrono::steady_clock::now();
+    std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
     auto elapsed = now - lastDrawTime;
     int dt = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
     lastDrawTime = now;
+
+	// check for destroyed bullets - I NEED MORE BULLETS
+    for(auto it = begin(entities); it != end(entities);)
+    {
+        Entity* entity = it->second;
+        if (entity->type == EntityType::PLAYER_BULLET)
+        {
+            Bullet* bullet = static_cast<Bullet*>(entity);
+            if (bullet->destroyed)
+            {
+                entities.erase(it++); // previously this was something like m_map.erase(it++);
+            } 
+            else 
+                ++it;
+        } 
+        else
+        ++it;
+    }
+    
 
     for (auto entry : entities) {
         auto entity = entry.second;

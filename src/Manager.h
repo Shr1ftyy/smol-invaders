@@ -4,14 +4,15 @@
 #include "Player.h"
 #include "Bullet.h"
 #include "Enemy.h"
+#include <chrono>
 
 struct Manager
 {
     int screenWidth;
     int screenHeight;
     // game clock -> used for physics
-    std::chrono::steady_clock::time_point lastUpdateTime;
-    std::chrono::steady_clock::time_point lastDrawTime;
+    std::chrono::system_clock::time_point lastUpdateTime;
+    std::chrono::system_clock::time_point lastDrawTime;
     EntityMap entities;
     // EventMap events;
 
