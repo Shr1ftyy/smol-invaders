@@ -103,7 +103,7 @@ int main(void)
         int X = distribution(rng);
         int Y = distribution(rng);
 
-        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, {0.0, 0.0}, {32.0, 0.0}, 3, 2.0, {32.0, 32.0}, {50.0, 50.0}, {50.0, 50.0}, {(float)X, (float)Y}, 10);
+        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, {0.0, 0.0}, {0.0, 1024.0}, {32.0, 0.0}, 3, 2.0, {32.0, 32.0}, {50.0, 50.0}, {32.0, 32.0}, {50.0, 50.0}, 3, {32.0, 0}, 6.0, {50.0, 50.0}, {(float)X, (float)Y}, 10);
         Entity* newEnemy = static_cast<Entity*>(enemy);
 
         gameManager.addEntity(newEnemy);
