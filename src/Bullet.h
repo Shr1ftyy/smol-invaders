@@ -9,7 +9,7 @@ struct Bullet : Entity
     // number of sprite frames
     int numFrames;
     // fps of animation
-    int spriteFPS;
+    float spriteFPS;
     // bullet velocity
     Vector2 velocity;
     // coords of first image of spritesheet for player
@@ -29,9 +29,9 @@ struct Bullet : Entity
     // is exploding
     bool exploding;
 
-    Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, Vector2 _velocity, float _dmg);
+    Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, Vector2 _velocity, float _dmg);
     bool outOfBounds(int screenWidth, int screenHeight);
-    void update(Manager* _manager);
+    void update(Manager* _manager, float dt);
     void draw(int dt);
 };
 

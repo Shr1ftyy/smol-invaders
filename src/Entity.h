@@ -1,8 +1,8 @@
 #ifndef ENTITY
 #define ENTITY
 #include "raylib.h"
-#include <unordered_map>
 #include <chrono>
+#include <unordered_map>
 #include <vector>
 
 enum EntityType
@@ -13,7 +13,7 @@ enum EntityType
     ENEMY_BULLET
 };
 
-using EntityId =  unsigned int;
+using EntityId = unsigned int;
 using EventMap = std::unordered_map<EntityId, std::vector<void*>*>*;
 
 struct Entity

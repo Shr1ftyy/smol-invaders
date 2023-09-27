@@ -28,14 +28,16 @@ struct Player : Entity
     Vector2 indexingVec;
     // number of sprite frams
     int numFrames;
+    // sprite fps
+    float spriteFPS;
     // default bullet spritesheet
     Texture2D defaultBulletSheet;
     // health points
     float hp;
 
-    Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp);
+    Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp);
     bool outOfBounds(Vector2 entity, int screenWidth, int screenHeight);
-    void update(Manager* _manager, int _screenWidth, int _screenHeight, int dt);
+    void update(Manager* _manager, int _screenWidth, int _screenHeight, float dt);
     void fireDefault(Manager* _manager);
     void draw();
 };
