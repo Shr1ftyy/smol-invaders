@@ -18,7 +18,7 @@ void Manager::deleteEntity(EntityId _id)
 
 void Manager::update()
 {
-    auto now = std::chrono::high_resolution_clock::now();
+    auto now = std::chrono::steady_clock::now();
     auto elapsed = now - lastUpdateTime;
     int dt = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
     lastUpdateTime = now;
@@ -89,7 +89,7 @@ void Manager::update()
 
 void Manager::draw()
 {
-    auto now = std::chrono::high_resolution_clock::now();
+    auto now = std::chrono::steady_clock::now();
     auto elapsed = now - lastDrawTime;
     int dt = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
     lastDrawTime = now;

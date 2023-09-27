@@ -1,14 +1,15 @@
-#define FMT_HEADER_ONLY
-#include "raylib.h"
-#include "raymath.h"
-#include <iostream>
-#include <fmt/core.h>
-#include <chrono>
-#include <vector>
-
 #include "Manager.h"
 #include "Player.h"
 #include "SimpleEnemy.h"
+
+#define FMT_HEADER_ONLY
+#include <fmt/core.h>
+#include "raylib.h"
+#include "raymath.h"
+
+#include <chrono>
+#include <iostream>
+#include <vector>
 
 #define BULLET_HEIGHT 10
 #define BULLET_WIDTH 5

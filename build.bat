@@ -1,20 +1,15 @@
-@echo OFF
-if not defined DevEnvDir ( 
-    call "C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvarsall" x64
-)
-echo "Starting Build for all Projects with proposed changes"
-echo .
-devenv "smol-invaders.sln" /build Release 
+@echo off
 
-rem Check the return code of devenv
-if %errorlevel% equ 0 (
-    echo Compilation successful.
-    echo .
-    echo "Running"
-    call "x64\Release\smol-invaders.exe"
-    echo "All builds completed." 
+if "%1" == "release" (
+    cmake -S . -B build
+    cmake --build build --config Release
+    if %errorlevel% equ 0 (
+        call "build\Release\smol-invaders.exe"
+    )
 ) else (
-    echo Compilation failed.
+    cmake -S . -B build
+    cmake --build build
+    if %errorlevel% equ 0 (
+        call "build\Debug\smol-invaders.exe"
+    )
 )
-echo .
-pause

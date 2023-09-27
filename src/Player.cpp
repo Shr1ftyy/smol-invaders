@@ -1,8 +1,11 @@
 #include "Player.h"
 #include "Manager.h"
 #include "Bullet.h"
-#include "raymath.h"
+
+
+#define FMT_HEADER_ONLY
 #include <fmt/core.h>
+#include "raymath.h"
 
 Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
     Entity(_spriteSheet, _textureDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
@@ -119,7 +122,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, int 
 
     // fire weapon(s)
     if (IsKeyDown(KEY_SPACE)) {
-        auto now = std::chrono::high_resolution_clock::now();
+        auto now = std::chrono::steady_clock::now();
         auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastShotTime);
         if (timeElapsed.count() >= (float)1000 / fireRate) {
             fireDefault(_manager);
