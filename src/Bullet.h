@@ -6,12 +6,17 @@ struct Manager;
 
 struct Bullet : Entity
 {
+    // number of sprite frames
+    int numFrames;
+    // fps of animation
+    int spriteFPS;
+    // bullet velocity
     Vector2 velocity;
     // coords of first image of spritesheet for player
     Vector2 src;
     // indexing vector for rest of images
     Vector2 indexingVec;
-    // current frame index
+    // current index
     int currentIndex;
     // current frame pos
     Vector2 currentFramePos;
@@ -19,6 +24,10 @@ struct Bullet : Entity
     int timeSinceLastDraw;
     // damage
     float dmg;
+    // is destroyed
+    bool destroyed;
+    // is exploding
+    bool exploding;
 
     Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, int _spriteFPS, Vector2 _textureDims, Vector2 _hitboxDims, Vector2 _origin, Vector2 _velocity, float _dmg);
     bool outOfBounds(int screenWidth, int screenHeight);
