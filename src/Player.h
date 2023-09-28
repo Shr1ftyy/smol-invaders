@@ -1,6 +1,8 @@
 #ifndef PLAYER
 #define PLAYER
+
 #include "Entity.h"
+#include "Powerup.h"
 
 struct Manager; // Forward declaration of Manager
 
@@ -40,5 +42,6 @@ struct Player : Entity
     void update(Manager* _manager, int _screenWidth, int _screenHeight, float dt);
     void fireDefault(Manager* _manager);
     void draw();
+    void powerUp(Powerup* _powerup);
 };
 #endif // PLAYER

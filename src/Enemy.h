@@ -5,8 +5,16 @@
 
 struct Manager;
 
+enum EnemyType
+{
+    BASIC,
+    SIMPLE
+};
+
 struct Enemy : Entity
 {
+    // enemy type
+    EnemyType enemyType;
     // number of sprite frames
     int numFrames;
     // fps of animation
@@ -37,12 +45,10 @@ struct Enemy : Entity
     float timeSinceLastDraw;
     // health points
     float hp;
-    // is destroyed
-    bool destroyed;
     // is exploding
     bool exploding;
 
-    Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp);
+    Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp, EnemyType _enemyType);
     void update(Manager* _manager);
     void draw(float dt);
 };

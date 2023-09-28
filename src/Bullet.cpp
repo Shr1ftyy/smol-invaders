@@ -13,7 +13,7 @@ Bullet::Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _
     timeSinceLastDraw = 0;
     currentFramePos = _src;
     dmg = _dmg;
-    destroyed = 0;
+    destroyed = false;
     exploding = 0;
 }
 
@@ -47,8 +47,8 @@ void Bullet::draw(int dt)
             currentIndex++;
             if (currentIndex >= numFrames)
             {
-                exploding = 0;
-                destroyed = 1;
+                exploding = false;
+                destroyed = true;
                 return;
             }
 

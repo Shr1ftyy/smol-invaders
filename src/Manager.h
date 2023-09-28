@@ -2,9 +2,12 @@
 #define MANAGER
 
 #include "Bullet.h"
-#include "Enemy.h"
+#include "SimpleEnemy.h"
 #include "Player.h"
+#include "Powerup.h"
+
 #include <chrono>
+#include <vector>
 
 struct Manager
 {
@@ -14,6 +17,7 @@ struct Manager
     std::chrono::system_clock::time_point lastUpdateTime;
     std::chrono::system_clock::time_point lastDrawTime;
     EntityMap entities;
+    std::vector<Powerup*> powerupsToAdd;
     // EventMap events;
 
     Manager(int _screenWidth, int _screenHeight);

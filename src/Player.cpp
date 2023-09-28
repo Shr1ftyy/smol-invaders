@@ -6,7 +6,8 @@
 #include "raymath.h"
 #include <fmt/core.h>
 
-Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) : Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
+Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
+    Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
 {
     defaultFireSound = _defaultFireSound;
     currentVelocity = {0, 0};
@@ -133,5 +134,19 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
             fireDefault(_manager);
             lastShotTime = now;
         }
+    }
+}
+
+void Player::powerUp(Powerup* powerup)
+{
+    switch (powerup->powerupType)
+    {
+    case (PowerupType::INCREASE_FIRERATE):
+        if(fireRate <= 4)
+        {
+            fireRate *= 2;
+        }
+    default:
+        ;    
     }
 }

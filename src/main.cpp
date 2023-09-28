@@ -89,7 +89,9 @@ int main(void)
         0.0001,
         9.8,
         BULLET_PER_SECOND,
-        3.0);
+        3.0
+    );
+    
     Entity* newEntity = static_cast<Entity*>(player);
 
     gameManager.addEntity(newEntity);
@@ -103,7 +105,27 @@ int main(void)
         int X = distribution(rng);
         int Y = distribution(rng);
 
-        SimpleEnemy* enemy = new SimpleEnemy(enemyTexture, enemyExplosionSound, {0.0, 0.0}, {0.0, 1024.0}, {32.0, 0.0}, 3, 2.0, {32.0, 32.0}, {50.0, 50.0}, {32.0, 32.0}, {50.0, 50.0}, 3, {32.0, 0}, 6.0, {50.0, 50.0}, {(float)X, (float)Y}, 10);
+        SimpleEnemy* enemy = new SimpleEnemy
+        (
+            enemyTexture, 
+            enemyExplosionSound, 
+            {0.0, 0.0}, 
+            {0.0, 1024.0}, 
+            {32.0, 0.0}, 
+            3, 
+            2.0, 
+            {32.0, 32.0}, 
+            {50.0, 50.0}, 
+            {32.0, 32.0}, 
+            {50.0, 50.0}, 
+            3, 
+            {32.0, 0}, 
+            6.0, 
+            {50.0, 50.0}, 
+            {(float)X, (float)Y}, 
+            10
+        );
+        
         Entity* newEnemy = static_cast<Entity*>(enemy);
 
         gameManager.addEntity(newEnemy);

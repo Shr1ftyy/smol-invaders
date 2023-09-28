@@ -12,6 +12,7 @@ Entity::Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _outputDims
     type = _entityType;
     id = Entity::newId;
     Entity::newId++;
+    destroyed = false;
 }
 
 void Entity::update()

@@ -24,8 +24,6 @@ struct Bullet : Entity
     int timeSinceLastDraw;
     // damage
     float dmg;
-    // is destroyed
-    bool destroyed;
     // is exploding
     bool exploding;
 

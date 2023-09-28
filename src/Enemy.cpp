@@ -3,9 +3,10 @@
 #include "raymath.h"
 #include <iostream>
 
-Enemy::Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp) :
+Enemy::Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp, EnemyType _enemyType) :
     Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::ENEMY_TYPE)
 {
+    enemyType = _enemyType;
     deathSound = _deathSound;
     src = _src;
     explosionSrc = _src;
