@@ -8,7 +8,6 @@
 #include "raymath.h"
 #include <chrono>
 #include <fmt/core.h>
-#include <iostream>
 #include <random>
 #include <vector>
 
@@ -29,10 +28,17 @@ int main(void)
 
     InitWindow(screenWidth, screenHeight, "smol-invaders");
     InitAudioDevice();
-    SetMasterVolume(0.1);
+    SetMasterVolume(0.2);
 
     // create game manager instance - a simple ECS
-    Manager gameManager = Manager(screenWidth, screenHeight);
+    Manager gameManager = Manager
+    (
+        screenWidth,
+        screenHeight,
+        {200, 200},
+        {480, 480},
+        48.0
+    );
 
     Vector2 shipPosition =
         {
@@ -50,8 +56,10 @@ int main(void)
     const char* defaultBulletSpriteSheetLocation = "./resources/textures/yellow_bullets.png";
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
 
-    const char* defaultFireSoundLocation = "./resources/sounds/shoot.wav";
-    const char* enemyExplosionSoundLocation = "./resources/sounds/invaderkilled.wav";
+    const char* defaultFireSoundLocation = "./resources/sounds/shoot4.wav";
+    const char* enemyExplosionSoundLocation = "./resources/sounds/explosion2.wav";
+    
+    const char* powerupSoundLocation = "./resources/sounds/powerUp.wav";
 
     Texture2D shipTexture = LoadTexture(shipTextureLocation);
     Texture2D defaultBulletSheet = LoadTexture(defaultBulletSpriteSheetLocation);
@@ -62,6 +70,9 @@ int main(void)
 
     Wave enemyExplosionWave = LoadWave(enemyExplosionSoundLocation);
     Sound enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
+    
+    Wave powerupWave = LoadWave(powerupSoundLocation);
+    Sound powerupSound = LoadSoundFromWave(powerupWave);
 
     Font hackNerdFontRegular = LoadFontEx("resources/fonts/HackNerdFontMono/HackNerdFontMono-Regular.ttf", 20, 0, 250);
 
@@ -75,6 +86,7 @@ int main(void)
     Player* player = new Player(
         shipTexture,
         defaultFireSound,
+        powerupSound,
         defaultBulletSheet,
         {0, 0},
         {0, 0},
@@ -96,7 +108,7 @@ int main(void)
 
     gameManager.addEntity(newEntity);
 
-    for (int i = 0; i < 51; i++)
+    for (int i = 0; i < 37; i++)
     {
         // Define the distribution for the random integer within the range
         std::uniform_int_distribution<int> distribution(min_value, max_value);

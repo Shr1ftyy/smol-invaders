@@ -15,6 +15,9 @@ Bullet::Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _
     dmg = _dmg;
     destroyed = false;
     exploding = 0;
+    touchingEnemy = false;
+    
+    prevPosition = position;
 }
 
 bool Bullet::outOfBounds(int screenWidth, int screenHeight)
@@ -28,6 +31,7 @@ bool Bullet::outOfBounds(int screenWidth, int screenHeight)
 
 void Bullet::update(Manager* _manager, float dt)
 {
+    prevPosition = position;
     Vector2 displacement = {velocity.x * dt, velocity.y * dt};
     if (!destroyed && !exploding)
     {

@@ -6,16 +6,19 @@
 #include "raymath.h"
 #include <fmt/core.h>
 
-Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
+Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Sound _powerupSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
     Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
 {
     defaultFireSound = _defaultFireSound;
+    powerupSound = _powerupSound;
+    
     currentVelocity = {0, 0};
     maxVelocity = _maxVelocity;
     force = _force;
     frictionCoeff = _frictionCoeff;
     normal = _normal;
     fireRate = _fireRate;
+    defaultFireRate = _fireRate;
 
     numFrames = _numFrames;
     spriteFPS = _spriteFPS;
@@ -53,6 +56,40 @@ void Player::fireDefault(Manager* _manager)
 //------------------------------------------------------------------------------------
 void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, float dt)
 {
+    // check if powerups have expired
+    for(auto p = begin(activePowerups); p != end(activePowerups);)
+    {
+        float* timeLeft = &(p->second.second);
+        PowerupType powerupType = p->first;
+        
+        (*timeLeft) -= dt;
+        if ((*timeLeft) <= 0)
+        {
+            switch (powerupType)
+            {
+            case (PowerupType::INCREASE_FIRERATE):
+                fireRate = fireRate > defaultFireRate ? defaultFireRate : fireRate;
+            default:
+                ;
+            }
+            activePowerups.erase(powerupType);
+            ++p;
+            continue;   
+            
+        } 
+        else
+        {
+            switch (powerupType)
+            {
+            case (PowerupType::INCREASE_FIRERATE):
+                fireRate = fireRate < 2*defaultFireRate ? 2*defaultFireRate : fireRate;
+            default:
+                ;
+            }
+        }
+        ++p;
+    }
+    
     Vector2 oldShipPosition = position;
 
     bool engineOn = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A) ||
@@ -139,14 +176,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
 
 void Player::powerUp(Powerup* powerup)
 {
-    switch (powerup->powerupType)
-    {
-    case (PowerupType::INCREASE_FIRERATE):
-        if(fireRate <= 4)
-        {
-            fireRate *= 2;
-        }
-    default:
-        ;    
-    }
+    auto powerupPair = std::make_pair(powerup, Powerup::powerupLifetimes[powerup->powerupType]);
+    activePowerups[powerup->powerupType] = powerupPair; 
+    PlaySound(powerupSound);
 }

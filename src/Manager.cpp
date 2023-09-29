@@ -1,24 +1,59 @@
 #include "Manager.h"
+#include "helpers.h"
 
 #include <algorithm>
 #include <chrono>
 
-Manager::Manager(int _screenWidth, int _screenHeight)
+Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 _bottomRight, float _spacing)
 {
     screenWidth = _screenWidth;
     screenHeight = _screenHeight;
     lastUpdateTime = std::chrono::system_clock::now();
     lastDrawTime = std::chrono::system_clock::now();
+    
+    topLeft = _topLeft;
+    bottomRight = _bottomRight;
+    formationPositions = generateMeshGrid(_topLeft, _bottomRight, _spacing);
+    
+    timeSinceLastFormationUpdate = 0;
 }
 
 void Manager::addEntity(Entity* _entity)
-{
-    entities[_entity->id] = _entity;
+{    
+    if (_entity->type == EntityType::ENEMY_TYPE)
+    {
+        if(assignedPositionMap.size() < formationPositions.size())
+        {
+            for(Vector2* pos : formationPositions)
+            {
+            
+                if(unavailableFormationPositions.find((*pos)) == unavailableFormationPositions.end())
+                {
+                    // add enemy into formation
+                    assignedPositionMap[_entity->id] = pos;
+                    unavailableFormationPositions[(*pos)] = true;
+                    // TODO: DO NOT FORCE POSITION WHEN SPAWNING?!!?!??!!?!?!
+                    _entity->position = (*pos);
+                    
+                    entities[_entity->id] = _entity;
+                    break;
+                }
+            }
+        }
+    } else 
+    {
+        entities[_entity->id] = _entity;
+    }
 }
 
 void Manager::deleteEntity(EntityId _id)
 {
     entities.erase(_id);
+    
+    // remove enemy from formation
+    Vector2* pos = assignedPositionMap[_id];
+    unavailableFormationPositions.erase((*pos));
+    assignedPositionMap.erase(_id);
 }
 
 void Manager::update()
@@ -57,6 +92,13 @@ void Manager::update()
                             bullet->hitboxDims.x,
                             bullet->hitboxDims.y
                         };
+                    Rectangle prevBulletHitbox =
+                        {
+                            bullet->prevPosition.x - (bullet->hitboxDims.x) / 2,
+                            bullet->prevPosition.y - (bullet->hitboxDims.y) / 2,
+                            bullet->hitboxDims.x,
+                            bullet->hitboxDims.y
+                        };
                     Rectangle enemyHitbox =
                         {
                             enemy->position.x - (enemy->hitboxDims.x) / 2,
@@ -65,10 +107,24 @@ void Manager::update()
                             enemy->hitboxDims.y
                         };
 
-                    if (CheckCollisionRecs(bulletHitbox, enemyHitbox))
+                    if (
+                        !CheckCollisionRecs(prevBulletHitbox, enemyHitbox) && 
+                        CheckCollisionRecs(bulletHitbox, enemyHitbox)
+                    )
                     {
                         enemy->hp -= bullet->dmg;
+                        bullet->touchingEnemy = true;
                         bullet->exploding = true;
+                        for(auto p: player->activePowerups)
+                        {
+                            auto powerupType = p.first;
+                            
+                            // check if player has piercing powerup active
+                            if(powerupType == PowerupType::PIERCING)
+                            {
+                                bullet->exploding=false;
+                            }
+                        }
                         bullet->hitboxDims = {0, 0};
                     }
                 }
@@ -150,6 +206,60 @@ void Manager::update()
     auto elapsed = now - lastUpdateTime;
     float dt = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
     lastUpdateTime = now;
+    timeSinceLastFormationUpdate += dt;
+    
+    if (timeSinceLastFormationUpdate > (1000.0/formationUpdateRate))
+    {
+        timeSinceLastFormationUpdate = 0;
+        // TODO: FIND A BETTER WAY TO DO THIS
+        if(DELTA <= 0)
+        {
+            if(formationPositions[0]->x > topLeft.x - MAX_X_OFFSET)
+            {
+                for(Vector2* pos: formationPositions)
+                {
+                    unavailableFormationPositions.erase((*pos));
+                    pos->x += DELTA;   
+                    unavailableFormationPositions[(*pos)] = true;
+                }
+
+            }
+            else
+            {
+                DELTA = -DELTA;
+            }
+        }
+        else
+        {
+            Vector2* maxPos = new Vector2;
+            maxPos->x = 0; 
+            maxPos->y = 0;
+             
+            for(auto p : formationPositions)
+            {
+                if(p->x > maxPos->x)
+                {
+                    maxPos = p;
+                }
+            }
+            
+            if(maxPos->x <= bottomRight.x + MAX_X_OFFSET)
+            {
+                for(Vector2* pos : formationPositions)
+                {
+                    unavailableFormationPositions.erase((*pos));
+                    pos->x += DELTA;   
+                    unavailableFormationPositions[(*pos)] = true;
+                }
+
+            }
+            else
+            {
+                DELTA = -DELTA;
+            }
+        }
+
+    }
 
     for (auto entry : entities)
     {
@@ -168,6 +278,11 @@ void Manager::update()
         else if (entity->type == EntityType::ENEMY_TYPE)
         {
             Enemy* enemy = static_cast<Enemy*>(entity);
+            
+            if (!enemy->attacking)
+            {
+                enemy->position = (*assignedPositionMap[enemy->id]);
+            }
             
             if (enemy->enemyType == EnemyType::SIMPLE)
             {
