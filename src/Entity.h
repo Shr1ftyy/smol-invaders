@@ -1,8 +1,8 @@
 #ifndef ENTITY
 #define ENTITY
 #include "raylib.h"
-#include <unordered_map>
 #include <chrono>
+#include <unordered_map>
 #include <vector>
 
 enum EntityType
@@ -10,10 +10,11 @@ enum EntityType
     PLAYER_TYPE,
     PLAYER_BULLET,
     ENEMY_TYPE,
-    ENEMY_BULLET
+    ENEMY_BULLET,
+    POWERUP_TYPE
 };
 
-using EntityId =  unsigned int;
+using EntityId = unsigned int;
 using EventMap = std::unordered_map<EntityId, std::vector<void*>*>*;
 
 struct Entity
@@ -26,6 +27,7 @@ struct Entity
     Vector2 hitboxDims;
     Vector2 position;
     EntityType type;
+    bool destroyed;
 
     Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, EntityType _entityType);
     void update();
