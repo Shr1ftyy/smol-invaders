@@ -279,15 +279,15 @@ void Manager::update()
         {
             Enemy* enemy = static_cast<Enemy*>(entity);
             
-            if (!enemy->attacking)
-            {
-                enemy->position = (*assignedPositionMap[enemy->id]);
-            }
+            // if (!enemy->attacking && !enemy->resettingPosition)
+            // {
+            //     enemy->position = (*assignedPositionMap[enemy->id]);
+            // }
             
             if (enemy->enemyType == EnemyType::SIMPLE)
             {
                 SimpleEnemy* simpleEnemy = static_cast<SimpleEnemy*>(enemy);
-                Powerup* powerup = simpleEnemy->update(this);
+                Powerup* powerup = simpleEnemy->update(this, dt);
                 if (powerup)
                 {
                     powerupsToAdd.push_back(powerup);

@@ -58,6 +58,8 @@ int main(void)
 
     const char* defaultFireSoundLocation = "./resources/sounds/shoot4.wav";
     const char* enemyExplosionSoundLocation = "./resources/sounds/explosion2.wav";
+    const char* simpleEnemyFireSoundLocation = "./resources/sounds/simpleEnemy_shoot.wav";
+
     
     const char* powerupSoundLocation = "./resources/sounds/powerUp.wav";
 
@@ -67,6 +69,9 @@ int main(void)
 
     Wave defaultFireWave = LoadWave(defaultFireSoundLocation);
     Sound defaultFireSound = LoadSoundFromWave(defaultFireWave);
+    
+    Wave simpleEnemyFireWave = LoadWave(simpleEnemyFireSoundLocation);
+    Sound simpleEnemyFireSound = LoadSoundFromWave(simpleEnemyFireWave);
 
     Wave enemyExplosionWave = LoadWave(enemyExplosionSoundLocation);
     Sound enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
@@ -121,7 +126,12 @@ int main(void)
         (
             enemyTexture, 
             enemyExplosionSound, 
-            {0.0, 0.0}, 
+            simpleEnemyFireSound,
+            {0.0, 0.0},
+            {128, 0},
+            {(float)shipTexture.width,
+             (float)shipTexture.height},
+            {32.0, 32.0}, 
             {0.0, 1024.0}, 
             {32.0, 0.0}, 
             3, 
@@ -135,7 +145,9 @@ int main(void)
             6.0, 
             {50.0, 50.0}, 
             {(float)X, (float)Y}, 
-            10
+            10,
+            50,
+            0.2
         );
         
         Entity* newEnemy = static_cast<Entity*>(enemy);

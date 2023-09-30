@@ -3,8 +3,8 @@
 
 #include "raymath.h"
 
-Enemy::Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp, EnemyType _enemyType) :
-    Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::ENEMY_TYPE)
+Enemy::Enemy(Texture2D _spriteSheet, Sound _deathSound, Sound _fireSound, Vector2 _src, Vector2 _bulletSrc, Vector2 _bulletSrcDims, Vector2 _bulletOutputDims, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp, EnemyType _enemyType, float _rotationRate, float _maxVelocity) :
+Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::ENEMY_TYPE)
 {
     enemyType = _enemyType;
     deathSound = _deathSound;
@@ -24,7 +24,71 @@ Enemy::Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _e
     explosionIndexingVec = _explosionIndexingVec;
     numExplosionFrames = _numExplosionFrames;
     explosionFps = _explosionFps;
+    this->attacking = false;
+    rotationRate = _rotationRate;
+    rotation = 0.0;
+    lastRotation = rotation;
+    maxVelocity = _maxVelocity;
+    
+    resettingPosition = false;
+    lastPosition = position;
+    
+    bulletSrc = _bulletSrc;
+    bulletTextureDims = _bulletSrcDims;
+    bulletOutputDims = _bulletOutputDims;
+    defaultFireSound = _fireSound;
+}
+
+bool Enemy::outOfBounds(Manager* _manager)
+{
+    if (position.y >= _manager->screenHeight)
+    {
+        return true;
+    }
+    return false;
+}
+
+void Enemy::fireWeapon(Manager* _manager)
+{
+    float bulletX = position.x;
+    float bulletY = position.y + (hitboxDims.y / 2);
+    // TODO: add bullet indexing vector
+    Bullet* bullet = new Bullet(spriteSheet, bulletSrc, {0, 0}, 0, 0.0, bulletTextureDims, bulletOutputDims, bulletOutputDims, {bulletX, bulletY}, {0, 0.5}, 5);
+    _manager->addEntity(bullet);
+    PlaySound(defaultFireSound);
+}
+
+
+void Enemy::goBackToFormation(Manager* _manager, float _dt)
+{
     attacking = false;
+    Vector2 formationPosition = (*_manager->assignedPositionMap[id]);
+    if
+    (
+        (
+        lastPosition.x <= formationPosition.x  && position.x >= formationPosition.x
+        || lastPosition.x >= formationPosition.x && position.x <= formationPosition.x
+        )
+        &&
+        (
+        lastPosition.y <= formationPosition.y  && position.y >= formationPosition.y
+        || lastPosition.y >= formationPosition.y && position.y <= formationPosition.y
+        )
+    )
+    {
+        position = formationPosition;
+        resettingPosition = false;
+    }
+    else
+    {
+        Vector2 disp = Vector2Subtract(formationPosition, position);
+        Vector2 velocityVec = Vector2Normalize(disp);
+        velocityVec.x *= maxVelocity * _dt;  
+        velocityVec.y *= maxVelocity * _dt;
+        
+        position = Vector2Add(position, velocityVec);
+    }
+    
 }
 
 void Enemy::attack(Manager* _manager, float _dt)
@@ -36,7 +100,7 @@ Powerup* Enemy::dropPowerup()
     Texture2D powerupTexture;
     
     float p = (float)rand()/RAND_MAX;
-
+    
     if (p <= 0.25)
     {
         float p_1 = (float)rand()/RAND_MAX;
@@ -74,15 +138,15 @@ Powerup* Enemy::dropPowerup()
         
         Powerup* powerup = new Powerup
         (
-            powerupTexture,
-            { (float)powerupTexture.width, (float)powerupTexture.height },
-            { 16, 16 },
-            { 16, 16 },
-            { position.x, position.y },
-            EntityType::POWERUP_TYPE,
-            powerupType,
-            {0, 0.3}
-        );
+         powerupTexture,
+         { (float)powerupTexture.width, (float)powerupTexture.height },
+         { 16, 16 },
+         { 16, 16 },
+         { position.x, position.y },
+         EntityType::POWERUP_TYPE,
+         powerupType,
+         {0, 0.3}
+         );
         
         return powerup;
     }
@@ -115,19 +179,19 @@ void Enemy::draw(float dt)
             {
                 currentIndex = 0;
             }
-    
+            
             Vector2 offset = {(float)currentIndex * indexingVec.x, (float)currentIndex * indexingVec.y};
             currentFramePos = Vector2Add(src, offset);
-    
+            
             timeSinceLastDraw = 0;
         }
-    
+        
         Rectangle srcRec = {currentFramePos.x, currentFramePos.y, textureDims.x, textureDims.y};
         Rectangle destRec = {position.x, position.y, outputDims.x, outputDims.y};
         Vector2 textureOrigin = {(float)textureDims.x / 2, (float)textureDims.y / 2};
         
-        DrawTexturePro(spriteSheet, srcRec, destRec, textureOrigin, (float)0, WHITE);
-    
+        DrawTexturePro(spriteSheet, srcRec, destRec, textureOrigin, rotation, WHITE);
+        
         Vector2 hitboxOrigin = {(float)hitboxDims.x / 2, (float)hitboxDims.y / 2};
     }
     else if (exploding && !destroyed)
@@ -141,19 +205,19 @@ void Enemy::draw(float dt)
             {
                 destroyed = true;
             }
-    
+            
             Vector2 offset = {(float)currentIndex * explosionIndexingVec.x, (float)currentIndex * explosionIndexingVec.y};
             currentFramePos = Vector2Add(explosionSrc, offset);
-    
+            
             timeSinceLastDraw = 0;
         }
-    
+        
         Rectangle srcRec = {currentFramePos.x, currentFramePos.y, explosionDims.x, explosionDims.y};
         Rectangle destRec = {position.x, position.y, explosionOutputDims.x, explosionOutputDims.y};
         Vector2 textureOrigin = {(float)explosionDims.x / 2, (float)explosionDims.y / 2};
         
-        DrawTexturePro(spriteSheet, srcRec, destRec, textureOrigin, (float)0, WHITE);
-    
+        DrawTexturePro(spriteSheet, srcRec, destRec, textureOrigin, rotation, WHITE);
+        
     }
     // DrawRectangleLines(position.x - hitboxOrigin.x, position.y - hitboxOrigin.y, hitboxDims.x, hitboxDims.y, YELLOW);
 }
