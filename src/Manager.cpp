@@ -166,7 +166,8 @@ void Manager::update()
     for (auto it = begin(entities); it != end(entities);)
     {
         Entity* entity = it->second;
-        if (entity->type == EntityType::PLAYER_BULLET)
+        if (entity->type == EntityType::PLAYER_BULLET
+            || entity->type == EntityType::ENEMY_BULLET)
         {
             Bullet* bullet = static_cast<Bullet*>(entity);
             if (bullet->destroyed)
