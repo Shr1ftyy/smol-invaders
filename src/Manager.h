@@ -15,9 +15,9 @@ struct Vector2HashFunction
 {
     size_t operator()(const Vector2 vec) const
     {
-          size_t rowHash = std::hash<float>()(vec.x);
-          size_t colHash = std::hash<float>()(vec.y) << 1;
-          return rowHash ^ colHash;
+        size_t rowHash = std::hash<float>()(vec.x);
+        size_t colHash = std::hash<float>()(vec.y) << 1;
+        return rowHash ^ colHash;
     }
 };
 
@@ -28,9 +28,10 @@ struct Vector2EqualityFunction
         return Vector2Equals(vec1, vec1);
     }
 };
-    
+
 struct Manager
 {
+    Font gameFont = LoadFontEx("resources/fonts/CascadiaCode/CascadiaCode.ttf", 20, 0, 250);
     int screenWidth;
     int screenHeight;
     Vector2 topLeft;
@@ -50,7 +51,7 @@ struct Manager
     float MAX_X_OFFSET = 100.0;
     float DELTA = 10.0; 
     float timeSinceLastFormationUpdate;
-
+    
     Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 _bottomRight, float _spacing);
     void addEntity(Entity* _entity);
     void deleteEntity(EntityId _id);
