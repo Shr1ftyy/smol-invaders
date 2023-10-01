@@ -9,7 +9,8 @@ struct Manager;
 enum EnemyType
 {
     BASIC,
-    SIMPLE
+    SIMPLE,
+    FLYING
 };
 
 struct Enemy : Entity
@@ -80,7 +81,7 @@ struct Enemy : Entity
     bool outOfBounds(Manager* _manager);
     void goBackToFormation(Manager* _manager, float _dt);
     void fireWeapon(Manager* _manager);
-
+    
 };
 
 #endif // ENEMY

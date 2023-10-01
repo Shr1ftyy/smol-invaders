@@ -46,7 +46,7 @@ void Player::fireDefault(Manager* _manager)
     Vector2 buletHitboxDims = {15, 15};
     float bulletX = position.x;
     float bulletY = position.y - (hitboxDims.y / 2);
-    Bullet* bullet = new Bullet(defaultBulletSheet, {192, 64}, {32, 0}, 4, 30.0, bulletTextureDims, bulletTextureDims, buletHitboxDims, {bulletX, bulletY}, {0, -0.5}, 5);
+    Bullet* bullet = new Bullet(defaultBulletSheet, {192, 64}, {32, 0}, 4, 30.0, bulletTextureDims, bulletTextureDims, buletHitboxDims, {bulletX, bulletY}, {0, -0.5}, 5, EntityType::PLAYER_BULLET);
     _manager->addEntity(bullet);
     PlaySound(defaultFireSound);
 }

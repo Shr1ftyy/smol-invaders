@@ -26,7 +26,7 @@ void Manager::addEntity(Entity* _entity)
         {
             for(Vector2* pos : formationPositions)
             {
-            
+                
                 if(unavailableFormationPositions.find((*pos)) == unavailableFormationPositions.end())
                 {
                     // add enemy into formation
@@ -76,7 +76,7 @@ void Manager::update()
         if (entity->type == EntityType::ENEMY_TYPE)
         {
             Enemy* enemy = static_cast<Enemy*>(entity);
-
+            
             // check if colliding with player bullets
             for (auto e : entities)
             {
@@ -84,36 +84,35 @@ void Manager::update()
                 if (b->type == EntityType::PLAYER_BULLET)
                 {
                     Bullet* bullet = static_cast<Bullet*>(b);
-
+                    
                     Rectangle bulletHitbox =
-                        {
-                            bullet->position.x - (bullet->hitboxDims.x) / 2,
-                            bullet->position.y - (bullet->hitboxDims.y) / 2,
-                            bullet->hitboxDims.x,
-                            bullet->hitboxDims.y
-                        };
+                    {
+                        bullet->position.x - (bullet->hitboxDims.x) / 2,
+                        bullet->position.y - (bullet->hitboxDims.y) / 2,
+                        bullet->hitboxDims.x,
+                        bullet->hitboxDims.y
+                    };
                     Rectangle prevBulletHitbox =
-                        {
-                            bullet->prevPosition.x - (bullet->hitboxDims.x) / 2,
-                            bullet->prevPosition.y - (bullet->hitboxDims.y) / 2,
-                            bullet->hitboxDims.x,
-                            bullet->hitboxDims.y
-                        };
+                    {
+                        bullet->prevPosition.x - (bullet->hitboxDims.x) / 2,
+                        bullet->prevPosition.y - (bullet->hitboxDims.y) / 2,
+                        bullet->hitboxDims.x,
+                        bullet->hitboxDims.y
+                    };
                     Rectangle enemyHitbox =
-                        {
-                            enemy->position.x - (enemy->hitboxDims.x) / 2,
-                            enemy->position.y - (enemy->hitboxDims.y) / 2,
-                            enemy->hitboxDims.x,
-                            enemy->hitboxDims.y
-                        };
-
+                    {
+                        enemy->position.x - (enemy->hitboxDims.x) / 2,
+                        enemy->position.y - (enemy->hitboxDims.y) / 2,
+                        enemy->hitboxDims.x,
+                        enemy->hitboxDims.y
+                    };
+                    
                     if (
                         !CheckCollisionRecs(prevBulletHitbox, enemyHitbox) && 
                         CheckCollisionRecs(bulletHitbox, enemyHitbox)
-                    )
+                        )
                     {
                         enemy->hp -= bullet->dmg;
-                        bullet->touchingEnemy = true;
                         bullet->exploding = true;
                         for(auto p: player->activePowerups)
                         {
@@ -162,7 +161,7 @@ void Manager::update()
             }
         }
     }
-
+    
     // check for destroyed bullets and enemies - I NEED MORE BULLETS
     for (auto it = begin(entities); it != end(entities);)
     {
@@ -222,7 +221,7 @@ void Manager::update()
                     pos->x += DELTA;   
                     unavailableFormationPositions[(*pos)] = true;
                 }
-
+                
             }
             else
             {
@@ -234,7 +233,7 @@ void Manager::update()
             Vector2* maxPos = new Vector2;
             maxPos->x = 0; 
             maxPos->y = 0;
-             
+            
             for(auto p : formationPositions)
             {
                 if(p->x > maxPos->x)
@@ -251,26 +250,27 @@ void Manager::update()
                     pos->x += DELTA;   
                     unavailableFormationPositions[(*pos)] = true;
                 }
-
+                
             }
             else
             {
                 DELTA = -DELTA;
             }
         }
-
+        
     }
-
+    
     for (auto entry : entities)
     {
         auto entity = entry.second;
-
+        
         if (entity->type == EntityType::PLAYER_TYPE)
         {
             Player* player = static_cast<Player*>(entity);
             player->update(this, screenWidth, screenHeight, dt);
         }
-        else if (entity->type == EntityType::PLAYER_BULLET)
+        else if (entity->type == EntityType::PLAYER_BULLET
+                 || entity->type == EntityType::ENEMY_BULLET)
         {
             Bullet* bullet = static_cast<Bullet*>(entity);
             bullet->update(this, dt);
@@ -288,6 +288,15 @@ void Manager::update()
             {
                 SimpleEnemy* simpleEnemy = static_cast<SimpleEnemy*>(enemy);
                 Powerup* powerup = simpleEnemy->update(this, dt);
+                if (powerup)
+                {
+                    powerupsToAdd.push_back(powerup);
+                }   
+            }
+            else if (enemy->enemyType == EnemyType::FLYING)
+            {
+                FlyingEnemy* flyingEnemy = static_cast<FlyingEnemy*>(enemy);
+                Powerup* powerup = flyingEnemy->update(this, dt);
                 if (powerup)
                 {
                     powerupsToAdd.push_back(powerup);
@@ -321,11 +330,12 @@ void Manager::draw()
     auto elapsed = now - lastDrawTime;
     float dt = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
     lastDrawTime = now;
-
+    
     for (auto entry : entities)
     {
         auto entity = entry.second;
-        if (entity->type == EntityType::PLAYER_BULLET)
+        if (entity->type == EntityType::PLAYER_BULLET
+            || entity->type == EntityType::ENEMY_BULLET)
         {
             Bullet* bullet = static_cast<Bullet*>(entity);
             bullet->draw(dt);

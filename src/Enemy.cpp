@@ -53,7 +53,7 @@ void Enemy::fireWeapon(Manager* _manager)
     float bulletX = position.x;
     float bulletY = position.y + (hitboxDims.y / 2);
     // TODO: add bullet indexing vector
-    Bullet* bullet = new Bullet(spriteSheet, bulletSrc, {0, 0}, 0, 0.0, bulletTextureDims, bulletOutputDims, bulletOutputDims, {bulletX, bulletY}, {0, 0.5}, 5);
+    Bullet* bullet = new Bullet(spriteSheet, bulletSrc, {0, 0}, 0, 0.0, bulletTextureDims, bulletOutputDims, bulletOutputDims, {bulletX, bulletY}, {0, 0.5}, 5, EntityType::ENEMY_BULLET);
     _manager->addEntity(bullet);
     PlaySound(defaultFireSound);
 }
@@ -65,16 +65,16 @@ void Enemy::goBackToFormation(Manager* _manager, float _dt)
     Vector2 formationPosition = (*_manager->assignedPositionMap[id]);
     if
     (
-        (
-        lastPosition.x <= formationPosition.x  && position.x >= formationPosition.x
-        || lastPosition.x >= formationPosition.x && position.x <= formationPosition.x
-        )
-        &&
-        (
-        lastPosition.y <= formationPosition.y  && position.y >= formationPosition.y
-        || lastPosition.y >= formationPosition.y && position.y <= formationPosition.y
-        )
-    )
+     (
+      lastPosition.x <= formationPosition.x  && position.x >= formationPosition.x
+      || lastPosition.x >= formationPosition.x && position.x <= formationPosition.x
+      )
+     &&
+     (
+      lastPosition.y <= formationPosition.y  && position.y >= formationPosition.y
+      || lastPosition.y >= formationPosition.y && position.y <= formationPosition.y
+      )
+     )
     {
         position = formationPosition;
         resettingPosition = false;

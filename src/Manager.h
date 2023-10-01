@@ -3,6 +3,7 @@
 
 #include "Bullet.h"
 #include "SimpleEnemy.h"
+#include "FlyingEnemy.h"
 #include "Player.h"
 #include "Powerup.h"
 #include "raymath.h"

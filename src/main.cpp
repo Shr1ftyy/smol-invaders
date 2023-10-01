@@ -10,6 +10,7 @@
 #include "Manager.h"
 #include "Player.h"
 #include "SimpleEnemy.h"
+#include "FlyingEnemy.h"
 
 #include "raymath.h"
 #include <chrono>
@@ -116,7 +117,7 @@ int main(void)
     
     gameManager.addEntity(newEntity);
     
-    for (int i = 0; i < 37; i++)
+    for (int i = 0; i < 19; i++)
     {
         // Define the distribution for the random integer within the range
         std::uniform_int_distribution<int> distribution(min_value, max_value);
@@ -152,9 +153,38 @@ int main(void)
          0.2
          );
         
+        FlyingEnemy* flyingEnemy = new FlyingEnemy
+        (
+         enemyTexture, 
+         enemyExplosionSound, 
+         simpleEnemyFireSound,
+         {0.0, 32.0},
+         {96, 32.0},
+         {32.0,32.0},
+         {32.0, 32.0}, 
+         {0.0, 1152.0}, 
+         {32.0, 0.0}, 
+         3, 
+         2.0, 
+         {32.0, 32.0}, 
+         {50.0, 50.0}, 
+         {32.0, 32.0}, 
+         {50.0, 50.0}, 
+         3, 
+         {32.0, 0}, 
+         6.0, 
+         {50.0, 50.0}, 
+         {(float)X, (float)Y}, 
+         10,
+         50,
+         0.2
+         );
+        
         Entity* newEnemy = static_cast<Entity*>(enemy);
+        Entity* newFlyingEnemy = static_cast<Entity*>(flyingEnemy);
         
         gameManager.addEntity(newEnemy);
+        gameManager.addEntity(newFlyingEnemy);
     }
     
     // vector of bullets
