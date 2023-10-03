@@ -24,7 +24,7 @@ Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType
     explosionIndexingVec = _explosionIndexingVec;
     numExplosionFrames = _numExplosionFrames;
     explosionFps = _explosionFps;
-    this->attacking = false;
+    attacking = false;
     rotationRate = _rotationRate;
     rotation = 0.0;
     lastRotation = rotation;
@@ -63,6 +63,7 @@ void Enemy::goBackToFormation(Manager* _manager, float _dt)
 {
     attacking = false;
     Vector2 formationPosition = (*_manager->assignedPositionMap[id]);
+    
     if
     (
      (

@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 
 Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 _bottomRight, float _spacing)
 {
@@ -48,12 +49,16 @@ void Manager::addEntity(Entity* _entity)
 
 void Manager::deleteEntity(EntityId _id)
 {
-    entities.erase(_id);
-    
     // remove enemy from formation
-    Vector2* pos = assignedPositionMap[_id];
-    unavailableFormationPositions.erase((*pos));
-    assignedPositionMap.erase(_id);
+    auto entity = entities[_id];
+    if (entity->type == EntityType::ENEMY_TYPE)
+    {
+        Vector2* pos = assignedPositionMap[_id];
+        unavailableFormationPositions.erase((*pos));
+        assignedPositionMap.erase(_id);
+    }
+    
+    entities.erase(_id);
 }
 
 void Manager::update()
@@ -68,6 +73,103 @@ void Manager::update()
             player = static_cast<Player*>(entity);
         }
     }
+    
+    // basic respawning loop
+    // if((assignedPositionMap.size() < formationPositions.size()) && (float)rand()/RAND_MAX <= 0.05)
+    // {
+    //     std::cout << "spawning more enemies..." << std::endl;
+    //     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
+        
+    //     const char* enemyExplosionSoundLocation = "./resources/sounds/explosion2.wav";
+    //     const char* simpleEnemyFireSoundLocation = "./resources/sounds/simpleEnemy_shoot.wav";
+        
+    //     const char* powerupSoundLocation = "./resources/sounds/powerUp.wav";
+        
+    //     Texture2D enemyTexture = LoadTexture(enemySpriteSheetLocation);
+        
+    //     Wave simpleEnemyFireWave = LoadWave(simpleEnemyFireSoundLocation);
+    //     Sound simpleEnemyFireSound = LoadSoundFromWave(simpleEnemyFireWave);
+        
+    //     Wave enemyExplosionWave = LoadWave(enemyExplosionSoundLocation);
+    //     Sound enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
+        
+    //     float xChance = ((float)rand()/RAND_MAX);
+    //     int randX = xChance <= 0.5 ? 0 : screenWidth;
+    //     float yChance = ((float)rand()/RAND_MAX);
+    //     int randY = yChance * 0.5 * screenHeight;
+        
+    //     std::cout << randX << "," << randY << std::endl;
+        
+    //     SimpleEnemy* enemy = new SimpleEnemy
+    //     (
+    //      enemyTexture, 
+    //      enemyExplosionSound, 
+    //      simpleEnemyFireSound,
+    //      {0.0, 0.0},
+    //      {96, 0},
+    //      {32.0,32.0},
+    //      {32.0, 32.0}, 
+    //      {0.0, 1024.0}, 
+    //      {32.0, 0.0}, 
+    //      3, 
+    //      2.0, 
+    //      {32.0, 32.0}, 
+    //      {50.0, 50.0}, 
+    //      {32.0, 32.0}, 
+    //      {50.0, 50.0}, 
+    //      3, 
+    //      {32.0, 0}, 
+    //      6.0, 
+    //      {50.0, 50.0}, 
+    //      {(float)randX, (float)randY}, 
+    //      10,
+    //      50,
+    //      0.2
+    //     );
+        
+    //     FlyingEnemy* flyingEnemy = new FlyingEnemy
+    //     (
+    //      enemyTexture, 
+    //      enemyExplosionSound, 
+    //      simpleEnemyFireSound,
+    //      {0.0, 32.0},
+    //      {96, 32.0},
+    //      {32.0,32.0},
+    //      {32.0, 32.0}, 
+    //      {0.0, 1152.0}, 
+    //      {32.0, 0.0}, 
+    //      3, 
+    //      2.0, 
+    //      {32.0, 32.0}, 
+    //      {50.0, 50.0}, 
+    //      {32.0, 32.0}, 
+    //      {50.0, 50.0}, 
+    //      3, 
+    //      {32.0, 0}, 
+    //      6.0, 
+    //      {50.0, 50.0}, 
+    //      {(float)randX, (float)randY}, 
+    //      10,
+    //      50,
+    //      0.2
+    //     );
+        
+    //     enemy->resettingPosition = true;
+    //     flyingEnemy->resettingPosition = true;
+    //     Entity* newEnemy = static_cast<Entity*>(enemy);
+    //     Entity* newFlyingEnemy = static_cast<Entity*>(flyingEnemy);
+        
+    //     if((float)rand()/RAND_MAX <= 0.5)
+    //     {
+    //         addEntity(newEnemy);
+    //         entities[newEnemy->id]->position = {(float)randX, (float)randY};
+    //     }
+    //     else
+    //     {
+    //         addEntity(newFlyingEnemy);
+    //         entities[newFlyingEnemy->id]->position = {(float)randX, (float)randY};
+    //     }
+    // }
     
     // decrease hp of enemies if colloding with player bullet
     for (auto entry : entities)
@@ -172,7 +274,8 @@ void Manager::update()
             Bullet* bullet = static_cast<Bullet*>(entity);
             if (bullet->destroyed)
             {
-                entities.erase(it++); // previously this was something like m_map.erase(it++);
+                deleteEntity(entity->id);
+                it++;
             }
             else
                 ++it;
@@ -183,7 +286,8 @@ void Manager::update()
             Enemy* enemy = static_cast<Enemy*>(entity);
             if (enemy->destroyed)
             {
-                entities.erase(it++); // previously this was something like m_map.erase(it++);
+                deleteEntity(entity->id);
+                it++;
             }
             else
                 ++it;
@@ -192,7 +296,8 @@ void Manager::update()
         {
             if (entity->destroyed)
             {
-                entities.erase(it++); // previously this was something like m_map.erase(it++);
+                deleteEntity(entity->id);
+                it++;
             }
             else
                 ++it;

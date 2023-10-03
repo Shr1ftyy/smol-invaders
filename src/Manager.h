@@ -32,21 +32,27 @@ struct Vector2EqualityFunction
 
 struct Manager
 {
+    // global game font
     Font gameFont = LoadFontEx("resources/fonts/CascadiaCode/CascadiaCode.ttf", 20, 0, 250);
+    // screen dimensions
     int screenWidth;
     int screenHeight;
+    // top left and bottom right of enemy ship formation
+    // TODO: make the formation system more generalizable/better 
     Vector2 topLeft;
     Vector2 bottomRight;
     // game clock -> used for physics
     std::chrono::system_clock::time_point lastUpdateTime;
     std::chrono::system_clock::time_point lastDrawTime;
+    // entity map
     EntityMap entities;
+    // powerups that need to be spawned in the next frame
     std::vector<Powerup*> powerupsToAdd;
     // formationPositions for enemies;
     std::vector<Vector2*> formationPositions;
     // assigned formations position of enemies
     std::unordered_map<unsigned int, Vector2*> assignedPositionMap;
-    // available formation positions
+    // occupied formation positions
     std::unordered_map<Vector2, bool, Vector2HashFunction, Vector2EqualityFunction> unavailableFormationPositions;
     float formationUpdateRate = 2.0;
     float MAX_X_OFFSET = 100.0;

@@ -15,7 +15,6 @@ enum EntityType
 };
 
 using EntityId = unsigned int;
-using EventMap = std::unordered_map<EntityId, std::vector<void*>*>*;
 
 struct Entity
 {
@@ -28,7 +27,7 @@ struct Entity
     Vector2 position;
     EntityType type;
     bool destroyed;
-
+    
     Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, EntityType _entityType);
     void update();
     void draw();

@@ -1,4 +1,5 @@
 #define FMT_HEADER_ONLY
+#define _USE_MATH_DEFINES
 
 #include "raylib.h"
 
@@ -17,6 +18,7 @@
 #include <fmt/core.h>
 #include <random>
 #include <vector>
+#include <iostream>
 
 #ifndef LOADEDFONT
 #define LOADEDFONT LoadFontEx("resources/fonts/CascadiaCode/CascadiaCode.ttf", 20, 0, 250)
@@ -117,7 +119,7 @@ int main(void)
     
     gameManager.addEntity(newEntity);
     
-    for (int i = 0; i < 19; i++)
+    for (int i = 0; i < 37; i++)
     {
         // Define the distribution for the random integer within the range
         std::uniform_int_distribution<int> distribution(min_value, max_value);
@@ -204,6 +206,7 @@ int main(void)
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {
+        
         // Update
         //----------------------------------------------------------------------------------
         gameManager.update();
@@ -218,6 +221,7 @@ int main(void)
         gameManager.draw();
         
         std::string shipPosText = fmt::format("X: {}, Y: {}", player->position.x, player->position.y);
+        std::string formationPositionsText = fmt::format("total: {}, assigned: {}", gameManager.formationPositions.size(), gameManager.assignedPositionMap.size());
         
         int bulletCount = 0;
         for (auto kv : gameManager.entities)
@@ -235,6 +239,7 @@ int main(void)
         DrawTextEx(gameManager.gameFont, shipPosText.c_str(), {10, 30}, 20, 1, RAYWHITE);
         DrawTextEx(gameManager.gameFont, numBulletsText.c_str(), {10, 50}, 20, 1, RAYWHITE);
         DrawTextEx(gameManager.gameFont, velocityText.c_str(), {10, 70}, 20, 1, RAYWHITE);
+        DrawTextEx(gameManager.gameFont, formationPositionsText.c_str(), {10, 130}, 20, 1, RAYWHITE);
         DrawFPS(10, 90);
         
         EndDrawing();
