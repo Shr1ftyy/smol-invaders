@@ -2,7 +2,7 @@
 #include "Manager.h"
 #include "raymath.h"
 
-Bullet::Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, Vector2 _velocity, float _dmg) : Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_BULLET)
+Bullet::Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, Vector2 _velocity, float _dmg, EntityType _type) : Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, _type)
 {
     numFrames = _numFrames;
     spriteFPS = _spriteFPS;
@@ -15,7 +15,6 @@ Bullet::Bullet(Texture2D _spriteSheet, Vector2 _src, Vector2 _indexingVec, int _
     dmg = _dmg;
     destroyed = false;
     exploding = 0;
-    touchingEnemy = false;
     
     prevPosition = position;
 }
@@ -55,19 +54,19 @@ void Bullet::draw(int dt)
                 destroyed = true;
                 return;
             }
-
+            
             Vector2 offset = {currentIndex * indexingVec.x, currentIndex * indexingVec.y};
             currentFramePos = Vector2Add(src, offset);
-
+            
             timeSinceLastDraw = 0;
         }
     }
-
+    
     Rectangle srcRec = {currentFramePos.x, currentFramePos.y, textureDims.x, textureDims.y};
     Rectangle destRec = {position.x, position.y, textureDims.x, textureDims.y};
     Vector2 textureOrigin = {(float)textureDims.x / 2, (float)textureDims.y / 2};
     DrawTexturePro(spriteSheet, srcRec, destRec, textureOrigin, (float)0, WHITE);
-
+    
     Vector2 hitboxOrigin = {(float)hitboxDims.x / 2, (float)hitboxDims.y / 2};
     // DrawRectangleLines(position.x - hitboxOrigin.x, position.y - hitboxOrigin.y, hitboxDims.x, hitboxDims.y, YELLOW);
 }

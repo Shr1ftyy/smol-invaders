@@ -7,7 +7,7 @@
 #include <fmt/core.h>
 
 Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Sound _powerupSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
-    Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
+Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
 {
     defaultFireSound = _defaultFireSound;
     powerupSound = _powerupSound;
@@ -19,7 +19,7 @@ Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Sound _powerupSo
     normal = _normal;
     fireRate = _fireRate;
     defaultFireRate = _fireRate;
-
+    
     numFrames = _numFrames;
     spriteFPS = _spriteFPS;
     src = _src;
@@ -46,7 +46,7 @@ void Player::fireDefault(Manager* _manager)
     Vector2 buletHitboxDims = {15, 15};
     float bulletX = position.x;
     float bulletY = position.y - (hitboxDims.y / 2);
-    Bullet* bullet = new Bullet(defaultBulletSheet, {192, 64}, {32, 0}, 4, 30.0, bulletTextureDims, bulletTextureDims, buletHitboxDims, {bulletX, bulletY}, {0, -0.5}, 5);
+    Bullet* bullet = new Bullet(defaultBulletSheet, {192, 64}, {32, 0}, 4, 30.0, bulletTextureDims, bulletTextureDims, buletHitboxDims, {bulletX, bulletY}, {0, -0.5}, 5, EntityType::PLAYER_BULLET);
     _manager->addEntity(bullet);
     PlaySound(defaultFireSound);
 }
@@ -67,9 +67,9 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
         {
             switch (powerupType)
             {
-            case (PowerupType::INCREASE_FIRERATE):
+                case (PowerupType::INCREASE_FIRERATE):
                 fireRate = fireRate > defaultFireRate ? defaultFireRate : fireRate;
-            default:
+                default:
                 ;
             }
             activePowerups.erase(powerupType);
@@ -81,9 +81,9 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
         {
             switch (powerupType)
             {
-            case (PowerupType::INCREASE_FIRERATE):
+                case (PowerupType::INCREASE_FIRERATE):
                 fireRate = fireRate < 2*defaultFireRate ? 2*defaultFireRate : fireRate;
-            default:
+                default:
                 ;
             }
         }
@@ -91,20 +91,20 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
     }
     
     Vector2 oldShipPosition = position;
-
+    
     bool engineOn = IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D) || IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A) ||
-                    IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
-
+        IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S);
+    
     std::string engineStatus = fmt::format("engine status: {}", engineOn);
-
-    DrawText(engineStatus.c_str(), 10, 110, 20, RAYWHITE);
-
+    
+    DrawTextEx(_manager->gameFont, engineStatus.c_str(), {10, 110}, 20, 1.0, RAYWHITE);
+    
     Vector2 resultantVelocity = currentVelocity;
-
+    
     float engineForce = engineOn ? force : 0;
-
+    
     float resultantForce = engineForce - (frictionCoeff * normal);
-
+    
     if (IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D))
         resultantVelocity.x += ((float)resultantForce * dt);
     if (IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A))
@@ -120,7 +120,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
         resultantForceVec.y *= resultantForce;
         resultantVelocity.x += resultantForceVec.x * dt;
         resultantVelocity.y += resultantForceVec.y * dt;
-
+        
         // stop moving by friction
         if (currentVelocity.x > 0 && resultantVelocity.x <= 0)
         {
@@ -130,7 +130,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
         {
             resultantVelocity.x = 0;
         }
-
+        
         if (currentVelocity.y > 0 && resultantVelocity.y <= 0)
         {
             resultantVelocity.y = 0;
@@ -140,27 +140,27 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
             resultantVelocity.y = 0;
         }
     }
-
+    
     if (Vector2Length(resultantVelocity) >= maxVelocity)
     {
         resultantVelocity = Vector2Normalize(resultantVelocity);
         resultantVelocity.x *= maxVelocity;
         resultantVelocity.y *= maxVelocity;
     }
-
+    
     Vector2 positionDelta = {resultantVelocity.x * dt, resultantVelocity.y * dt};
     position = Vector2Add(position, positionDelta);
-
+    
     // TODO: ADD GLOBAL HITBOX VAR
     // if (IsKeyDown(KEY_H)) showHitboxes = !showHitboxes;
-
+    
     if (outOfBounds(position, _screenWidth, _screenHeight))
     {
         position = oldShipPosition;
     }
-
+    
     currentVelocity = resultantVelocity;
-
+    
     // fire weapon(s)
     if (IsKeyDown(KEY_SPACE))
     {

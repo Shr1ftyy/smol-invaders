@@ -9,7 +9,8 @@ struct Manager;
 enum EnemyType
 {
     BASIC,
-    SIMPLE
+    SIMPLE,
+    FLYING
 };
 
 struct Enemy : Entity
@@ -50,12 +51,37 @@ struct Enemy : Entity
     bool exploding;
     // is attacking
     bool attacking;
-
-    Enemy(Texture2D _spriteSheet, Sound _deathSound, Vector2 _src, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp, EnemyType _enemyType);
+    // resetting position
+    bool resettingPosition;
+    // last position
+    Vector2 lastPosition;
+    // rotation
+    float rotation;
+    // last rotation 
+    float lastRotation;
+    // turn rate
+    float rotationRate;
+    // max velocity
+    float maxVelocity;
+    // bullet location in spritesheet
+    Vector2 bulletSrc;
+    // bullet texture dims
+    Vector2 bulletTextureDims;
+    // bullet outputDims;
+    Vector2 bulletOutputDims;
+    // bullet firing sound;
+    Sound defaultFireSound;
+    
+    
+    Enemy(Texture2D _spriteSheet, Sound _deathSound, Sound _fireSound, Vector2 _src, Vector2 _bulletSrc, Vector2 _bulletSrcDims, Vector2 _bulletOutputDims, Vector2 _explosionSrc, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _explosionDims, Vector2 _explosionOutputDims, int _numExplosionFrames, Vector2 _explosionIndexingVec, float _explosionFps, Vector2 _hitboxDims, Vector2 _origin, float _hp, EnemyType _enemyType, float _rotationRate, float _maxVelocity);
     void attack(Manager* _manager, float _dt);
     void update(Manager* _manager);
     void draw(float dt);
     Powerup* dropPowerup();
+    bool outOfBounds(Manager* _manager);
+    void goBackToFormation(Manager* _manager, float _dt);
+    void fireWeapon(Manager* _manager);
+    
 };
 
 #endif // ENEMY
