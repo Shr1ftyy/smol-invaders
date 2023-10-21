@@ -9,3 +9,12 @@ If you have cloned it non-recursively:
 ```
 git submodule update --init
 ```
+
+# TODO
+- [x] ECS
+- [x] Player
+- [x] Simple enemies
+- [x] Flying enemies
+- [ ] Score
+- [ ] Simple gameplay loop
+

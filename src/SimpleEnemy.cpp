@@ -40,7 +40,8 @@ Powerup* SimpleEnemy::update(Manager* _manager, float _dt)
         goBackToFormation(_manager, _dt);
         firedWeapon = false;
     }
-    else if (!resettingPosition)
+
+    if (!resettingPosition)
     {
         position = (*_manager->assignedPositionMap[id]);
     }
