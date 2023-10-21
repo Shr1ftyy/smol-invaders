@@ -47,6 +47,7 @@ void Manager::addEntity(Entity* _entity)
     }
 }
 
+// TODO: WIP
 void Manager::deleteEntity(EntityId _id)
 {
     // remove enemy from formation
@@ -58,7 +59,8 @@ void Manager::deleteEntity(EntityId _id)
         assignedPositionMap.erase(_id);
     }
     
-    entities.erase(_id);
+    eraseFromMap<EntityMap*, EntityId>(&entities, _id);
+    // entities.erase(_id);
 }
 
 void Manager::update()
@@ -264,6 +266,9 @@ void Manager::update()
         }
     }
     
+
+    // TODO: use smart pointers instead of raw pointers going forward
+    // TODO: (eventually) rewrite everything to support smart pointers :)
     // check for destroyed bullets and enemies - I NEED MORE BULLETS
     for (auto it = begin(entities); it != end(entities);)
     {
@@ -274,8 +279,7 @@ void Manager::update()
             Bullet* bullet = static_cast<Bullet*>(entity);
             if (bullet->destroyed)
             {
-                deleteEntity(entity->id);
-                it++;
+                entities.erase(it++);
             }
             else
                 ++it;
@@ -286,8 +290,10 @@ void Manager::update()
             Enemy* enemy = static_cast<Enemy*>(entity);
             if (enemy->destroyed)
             {
-                deleteEntity(entity->id);
-                it++;
+                entities.erase(it++);
+                Vector2* pos = assignedPositionMap[entity->id];
+                unavailableFormationPositions.erase((*pos));
+                assignedPositionMap.erase(entity->id);
             }
             else
                 ++it;
@@ -296,8 +302,7 @@ void Manager::update()
         {
             if (entity->destroyed)
             {
-                deleteEntity(entity->id);
-                it++;
+                entities.erase(it++);
             }
             else
                 ++it;

@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <iostream>
+#include <unordered_map>
 
 std::vector<Vector2*> generateMeshGrid(Vector2 topLeft, Vector2 bottomRight, float spacing) {
     std::vector<Vector2*> meshGrid;
@@ -31,4 +32,13 @@ std::vector<Vector2*> generateMeshGrid(Vector2 topLeft, Vector2 bottomRight, flo
     }
     
     return meshGrid;
+}
+
+// TODO: use this for deleteEntity???
+template <typename T1, typename T2>
+void eraseFromMap(T1 _map, T2 _key)
+{
+    auto elem = _map->find(_key);
+    delete elem->second;
+    _map->erase(elem);
 }

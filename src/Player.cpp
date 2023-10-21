@@ -5,6 +5,7 @@
 #define FMT_HEADER_ONLY
 #include "raymath.h"
 #include <fmt/core.h>
+#include <iostream>
 
 Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Sound _powerupSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
 Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
@@ -59,7 +60,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
     // check if powerups have expired
     for(auto p = begin(activePowerups); p != end(activePowerups);)
     {
-        float* timeLeft = &(p->second.second);
+        float* timeLeft = &(p->second);
         PowerupType powerupType = p->first;
         
         (*timeLeft) -= dt;
@@ -72,8 +73,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
                 default:
                 ;
             }
-            activePowerups.erase(powerupType);
-            ++p;
+            activePowerups.erase(p++);
             continue;   
             
         } 
@@ -86,6 +86,8 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
                 default:
                 ;
             }
+            ++p;
+            continue;
         }
         ++p;
     }
@@ -176,7 +178,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
 
 void Player::powerUp(Powerup* powerup)
 {
-    auto powerupPair = std::make_pair(powerup, Powerup::powerupLifetimes[powerup->powerupType]);
-    activePowerups[powerup->powerupType] = powerupPair; 
+    float powerupTime = Powerup::powerupLifetimes[powerup->powerupType];
+    activePowerups[powerup->powerupType] = powerupTime; 
     PlaySound(powerupSound);
 }

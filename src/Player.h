@@ -44,7 +44,7 @@ struct Player : Entity
     // health points
     float hp;
     // active powerups
-    std::unordered_map<PowerupType, std::pair<Powerup*, float>> activePowerups;
+    std::unordered_map<PowerupType, float> activePowerups;
 
     Player(Texture2D _spriteSheet, Sound _defaultFireSound, Sound _powerupSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp);
     bool outOfBounds(Vector2 entity, int screenWidth, int screenHeight);
