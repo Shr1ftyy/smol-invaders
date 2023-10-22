@@ -23,7 +23,7 @@ void SimpleEnemy::attack(Manager* _manager, float _dt)
     }
 }
 
-Powerup* SimpleEnemy::update(Manager* _manager, float _dt)
+std::shared_ptr<Powerup> SimpleEnemy::update(Manager* _manager, float _dt)
 {
     // TODO: implement enemy updating
     if((float)rand()/RAND_MAX < 0.0001)
@@ -64,6 +64,6 @@ Powerup* SimpleEnemy::update(Manager* _manager, float _dt)
         resettingPosition = true;
     }
     
-    return nullptr;
+    return std::shared_ptr<Powerup>(nullptr);
 }
 

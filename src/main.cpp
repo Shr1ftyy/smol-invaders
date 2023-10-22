@@ -18,7 +18,6 @@
 #include <fmt/core.h>
 #include <random>
 #include <vector>
-#include <iostream>
 
 #ifndef LOADEDFONT
 #define LOADEDFONT LoadFontEx("resources/fonts/CascadiaCode/CascadiaCode.ttf", 20, 0, 250)
@@ -94,7 +93,7 @@ int main(void)
     std::random_device rd;  // Seed for the random number generator
     std::mt19937 rng(rd()); // Mersenne Twister pseudo-random generator
     
-    Player* player = new Player(
+    std::shared_ptr<Player> player = std::shared_ptr<Player>(new Player(
                                 shipTexture,
                                 defaultFireSound,
                                 powerupSound,
@@ -113,9 +112,9 @@ int main(void)
                                 9.8,
                                 BULLET_PER_SECOND,
                                 3.0
-                                );
+                                ));
     
-    Entity* newEntity = static_cast<Entity*>(player);
+    std::shared_ptr<Entity> newEntity = std::static_pointer_cast<Entity>(player);
     
     gameManager.addEntity(newEntity);
     
@@ -128,7 +127,7 @@ int main(void)
         int X = distribution(rng);
         int Y = distribution(rng);
         
-        SimpleEnemy* enemy = new SimpleEnemy
+        std::shared_ptr<SimpleEnemy> enemy = std::shared_ptr<SimpleEnemy>(new SimpleEnemy
         (
          enemyTexture, 
          enemyExplosionSound, 
@@ -153,9 +152,9 @@ int main(void)
          10,
          50,
          0.2
-         );
+         ));
         
-        FlyingEnemy* flyingEnemy = new FlyingEnemy
+        std::shared_ptr<FlyingEnemy> flyingEnemy = std::shared_ptr<FlyingEnemy>(new FlyingEnemy
         (
          enemyTexture, 
          enemyExplosionSound, 
@@ -180,10 +179,10 @@ int main(void)
          10,
          50,
          0.2
-         );
+         ));
         
-        Entity* newEnemy = static_cast<Entity*>(enemy);
-        Entity* newFlyingEnemy = static_cast<Entity*>(flyingEnemy);
+        std::shared_ptr<Entity> newEnemy = std::static_pointer_cast<Entity>(enemy);
+        std::shared_ptr<Entity> newFlyingEnemy = std::static_pointer_cast<Entity>(flyingEnemy);
         
         gameManager.addEntity(newEnemy);
         gameManager.addEntity(newFlyingEnemy);
@@ -232,15 +231,16 @@ int main(void)
             }
         }
         
+
+        std::string scoreText = fmt::format("score : {}", gameManager.score);
         std::string numBulletsText = fmt::format("# of entities: {}, # of bullets: {}", gameManager.entities.size(), bulletCount);
         std::string velocityText = fmt::format("ship velocity: X: {}, y: {}", player->currentVelocity.x, player->currentVelocity.y);
         
-        DrawTextEx(gameManager.gameFont, "move the ship with arrow keys or WASD", {10, 10}, 20, 1, RAYWHITE);
-        DrawTextEx(gameManager.gameFont, shipPosText.c_str(), {10, 30}, 20, 1, RAYWHITE);
-        DrawTextEx(gameManager.gameFont, numBulletsText.c_str(), {10, 50}, 20, 1, RAYWHITE);
-        DrawTextEx(gameManager.gameFont, velocityText.c_str(), {10, 70}, 20, 1, RAYWHITE);
-        DrawTextEx(gameManager.gameFont, formationPositionsText.c_str(), {10, 130}, 20, 1, RAYWHITE);
-        DrawFPS(10, 90);
+        DrawTextEx(gameManager.gameFont, scoreText.c_str(), {10, 10}, 20, 1, RAYWHITE);
+        DrawTextEx(gameManager.gameFont, "move the ship with arrow keys or WASD", {10, 30}, 20, 1, RAYWHITE);
+        DrawTextEx(gameManager.gameFont, shipPosText.c_str(), {10, 50}, 20, 1, RAYWHITE);
+        DrawTextEx(gameManager.gameFont, numBulletsText.c_str(), {10, 70}, 20, 1, RAYWHITE);
+        DrawTextEx(gameManager.gameFont, velocityText.c_str(), {10, 90}, 20, 1, RAYWHITE);
         
         EndDrawing();
         //----------------------------------------------------------------------------------

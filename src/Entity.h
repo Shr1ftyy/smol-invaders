@@ -4,6 +4,7 @@
 #include <chrono>
 #include <unordered_map>
 #include <vector>
+#include <memory>
 
 enum EntityType
 {
@@ -31,8 +32,9 @@ struct Entity
     Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, EntityType _entityType);
     void update();
     void draw();
+    ~Entity();
 };
 
-using EntityMap = std::unordered_map<EntityId, Entity*>;
+using EntityMap = std::unordered_map<EntityId, std::shared_ptr<Entity>>;
 
 #endif // ENTITY

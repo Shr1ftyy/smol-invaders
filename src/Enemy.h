@@ -77,7 +77,7 @@ struct Enemy : Entity
     void attack(Manager* _manager, float _dt);
     void update(Manager* _manager);
     void draw(float dt);
-    Powerup* dropPowerup();
+    std::shared_ptr<Powerup> dropPowerup();
     bool outOfBounds(Manager* _manager);
     void goBackToFormation(Manager* _manager, float _dt);
     void fireWeapon(Manager* _manager);

@@ -5,7 +5,6 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <cmath>
-//#include <iostream>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -19,7 +18,7 @@ Enemy(_spriteSheet, _deathSound, _fireSound, _src, _bulletSrc, _bulletSrcDims, _
 void FlyingEnemy::attack(Manager* _manager, float _dt)
 {
     lastRotation = rotation;
-    Player* player;
+    std::shared_ptr<Player> player;
     
     for(auto entry : _manager->entities)
     {
@@ -27,7 +26,7 @@ void FlyingEnemy::attack(Manager* _manager, float _dt)
         if(entity->type == EntityType::PLAYER_TYPE)
         {
             
-            player = static_cast<Player*>(entity);
+            player = std::static_pointer_cast<Player>(entity);
         }
     }
     
@@ -73,7 +72,7 @@ void FlyingEnemy::attack(Manager* _manager, float _dt)
     }    
 }
 
-Powerup* FlyingEnemy::update(Manager* _manager, float _dt)
+std::shared_ptr<Powerup> FlyingEnemy::update(Manager* _manager, float _dt)
 {
     // TODO: implement enemy updating
     if((float)rand()/RAND_MAX < 0.0001)
@@ -114,6 +113,6 @@ Powerup* FlyingEnemy::update(Manager* _manager, float _dt)
         resettingPosition = true;
     }
     
-    return nullptr;
+    return std::shared_ptr<Powerup>(nullptr);
 }
 
