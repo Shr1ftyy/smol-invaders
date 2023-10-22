@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <unordered_map>
+#include <iostream>
 
 std::vector<Vector2*> generateMeshGrid(Vector2 topLeft, Vector2 bottomRight, float spacing) {
     std::vector<Vector2*> meshGrid;
