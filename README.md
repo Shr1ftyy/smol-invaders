@@ -15,6 +15,6 @@ git submodule update --init
 - [x] Player
 - [x] Simple enemies
 - [x] Flying enemies
-- [ ] Score
-- [ ] Simple gameplay loop
+- [x] Score
+- [x] Simple gameplay loop
 
