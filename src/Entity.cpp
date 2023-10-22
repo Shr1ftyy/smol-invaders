@@ -15,6 +15,9 @@ Entity::Entity(Texture2D _spriteSheet, Vector2 _textureDims, Vector2 _outputDims
     destroyed = false;
 }
 
+Entity::~Entity()
+{ }
+
 void Entity::update()
 {
 }

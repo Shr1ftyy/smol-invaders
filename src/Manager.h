@@ -47,20 +47,29 @@ struct Manager
     // entity map
     EntityMap entities;
     // powerups that need to be spawned in the next frame
-    std::vector<Powerup*> powerupsToAdd;
+    std::vector<std::shared_ptr<Powerup>> powerupsToAdd;
     // formationPositions for enemies;
     std::vector<Vector2*> formationPositions;
     // assigned formations position of enemies
     std::unordered_map<unsigned int, Vector2*> assignedPositionMap;
     // occupied formation positions
     std::unordered_map<Vector2, bool, Vector2HashFunction, Vector2EqualityFunction> unavailableFormationPositions;
+    // player score
+    int score;
+    // enemy texture
+    Texture2D enemyTexture;
+    // simple enemy fire sound
+    Sound simpleEnemyFireSound;
+    // enemy explosion sound
+    Sound enemyExplosionSound;
+
     float formationUpdateRate = 2.0;
     float MAX_X_OFFSET = 100.0;
     float DELTA = 10.0; 
     float timeSinceLastFormationUpdate;
     
     Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 _bottomRight, float _spacing);
-    void addEntity(Entity* _entity);
+    void addEntity(std::shared_ptr<Entity> _entity);
     void deleteEntity(EntityId _id);
     void update();
     void draw();

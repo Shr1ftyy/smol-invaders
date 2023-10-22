@@ -3,7 +3,6 @@
 #include "raylib.h"
 
 #include <vector>
-#include <iostream>
 #include <unordered_map>
 
 std::vector<Vector2*> generateMeshGrid(Vector2 topLeft, Vector2 bottomRight, float spacing) {
@@ -19,8 +18,6 @@ std::vector<Vector2*> generateMeshGrid(Vector2 topLeft, Vector2 bottomRight, flo
     int numXPoints = static_cast<int>((bottomRight.x - topLeft.x) / spacing) + 1;
     int numYPoints = static_cast<int>((bottomRight.y - topLeft.y) / spacing) + 1;
     
-    std::cout << "numXPoints: " << numXPoints << ", numYPoints: " << numYPoints << std::endl;
-    
     // Generate the mesh grid points
     for (int i = 0; i < numYPoints; ++i) {
         for (int j = 0; j < numXPoints; ++j) {
@@ -32,13 +29,4 @@ std::vector<Vector2*> generateMeshGrid(Vector2 topLeft, Vector2 bottomRight, flo
     }
     
     return meshGrid;
-}
-
-// TODO: use this for deleteEntity???
-template <typename T1, typename T2>
-void eraseFromMap(T1 _map, T2 _key)
-{
-    auto elem = _map->find(_key);
-    delete elem->second;
-    _map->erase(elem);
 }
