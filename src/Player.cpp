@@ -5,7 +5,6 @@
 #define FMT_HEADER_ONLY
 #include "raymath.h"
 #include <fmt/core.h>
-#include <iostream>
 
 Player::Player(Texture2D _spriteSheet, Sound _defaultFireSound, Sound _powerupSound, Texture2D _defaultBulletSheet, Vector2 _src, Vector2 _indexingVec, int _numFrames, float _spriteFPS, Vector2 _textureDims, Vector2 _outputDims, Vector2 _hitboxDims, Vector2 _origin, float _maxVelocity, float _force, float _frictionCoeff, float _normal, int _fireRate, float _hp) :
 Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType::PLAYER_TYPE)
@@ -47,7 +46,11 @@ void Player::fireDefault(Manager* _manager)
     Vector2 buletHitboxDims = {15, 15};
     float bulletX = position.x;
     float bulletY = position.y - (hitboxDims.y / 2);
-    Bullet* bullet = new Bullet(defaultBulletSheet, {192, 64}, {32, 0}, 4, 30.0, bulletTextureDims, bulletTextureDims, buletHitboxDims, {bulletX, bulletY}, {0, -0.5}, 5, EntityType::PLAYER_BULLET);
+    std::shared_ptr<Bullet> bullet = std::shared_ptr<Bullet>
+    (
+        new Bullet(defaultBulletSheet, {192, 64}, {32, 0}, 4, 30.0, bulletTextureDims, bulletTextureDims, buletHitboxDims, {bulletX, bulletY}, {0, -0.5}, 5, EntityType::PLAYER_BULLET)
+    );
+
     _manager->addEntity(bullet);
     PlaySound(defaultFireSound);
 }
@@ -176,7 +179,7 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
     }
 }
 
-void Player::powerUp(Powerup* powerup)
+void Player::powerUp(std::shared_ptr<Powerup> powerup)
 {
     float powerupTime = Powerup::powerupLifetimes[powerup->powerupType];
     activePowerups[powerup->powerupType] = powerupTime; 

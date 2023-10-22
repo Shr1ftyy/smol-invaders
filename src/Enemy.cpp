@@ -53,7 +53,11 @@ void Enemy::fireWeapon(Manager* _manager)
     float bulletX = position.x;
     float bulletY = position.y + (hitboxDims.y / 2);
     // TODO: add bullet indexing vector
-    Bullet* bullet = new Bullet(spriteSheet, bulletSrc, {0, 0}, 0, 0.0, bulletTextureDims, bulletOutputDims, bulletOutputDims, {bulletX, bulletY}, {0, 0.5}, 5, EntityType::ENEMY_BULLET);
+    std::shared_ptr<Bullet> bullet = std::shared_ptr<Bullet>
+    (
+        new Bullet(spriteSheet, bulletSrc, {0, 0}, 0, 0.0, bulletTextureDims, bulletOutputDims, bulletOutputDims, {bulletX, bulletY}, {0, 0.5}, 5, EntityType::ENEMY_BULLET)
+    );
+
     _manager->addEntity(bullet);
     PlaySound(defaultFireSound);
 }
@@ -95,7 +99,7 @@ void Enemy::goBackToFormation(Manager* _manager, float _dt)
 void Enemy::attack(Manager* _manager, float _dt)
 { }
 
-Powerup* Enemy::dropPowerup()
+std::shared_ptr<Powerup> Enemy::dropPowerup()
 {
     PowerupType powerupType;
     Texture2D powerupTexture;
@@ -137,7 +141,8 @@ Powerup* Enemy::dropPowerup()
             powerupTexture = LoadTexture("./resources/textures/sideways.png");
         }
         
-        Powerup* powerup = new Powerup
+        std::shared_ptr<Powerup> powerup = std::shared_ptr<Powerup>(
+        new Powerup
         (
          powerupTexture,
          { (float)powerupTexture.width, (float)powerupTexture.height },
@@ -147,7 +152,7 @@ Powerup* Enemy::dropPowerup()
          EntityType::POWERUP_TYPE,
          powerupType,
          {0, 0.3}
-         );
+         ));
         
         return powerup;
     }

@@ -3,7 +3,6 @@
 
 #include <algorithm>
 #include <chrono>
-#include <iostream>
 
 Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 _bottomRight, float _spacing)
 {
@@ -17,9 +16,25 @@ Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 
     formationPositions = generateMeshGrid(_topLeft, _bottomRight, _spacing);
     
     timeSinceLastFormationUpdate = 0;
+    score = 0;
+
+    const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
+ 
+    const char* enemyExplosionSoundLocation = "./resources/sounds/explosion2.wav";
+    const char* simpleEnemyFireSoundLocation = "./resources/sounds/simpleEnemy_shoot.wav";
+ 
+    const char* powerupSoundLocation = "./resources/sounds/powerUp.wav";
+ 
+    enemyTexture = LoadTexture(enemySpriteSheetLocation);
+ 
+    Wave simpleEnemyFireWave = LoadWave(simpleEnemyFireSoundLocation);
+    simpleEnemyFireSound = LoadSoundFromWave(simpleEnemyFireWave);
+ 
+    Wave enemyExplosionWave = LoadWave(enemyExplosionSoundLocation);
+    enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
 }
 
-void Manager::addEntity(Entity* _entity)
+void Manager::addEntity(std::shared_ptr<Entity> _entity)
 {    
     if (_entity->type == EntityType::ENEMY_TYPE)
     {
@@ -59,119 +74,100 @@ void Manager::deleteEntity(EntityId _id)
         assignedPositionMap.erase(_id);
     }
     
-    eraseFromMap<EntityMap*, EntityId>(&entities, _id);
-    // entities.erase(_id);
+    entities.erase(_id);
 }
 
 void Manager::update()
 {
     // search for player entity
-    Player* player;
+    std::shared_ptr<Player> player;
     for(auto entry: entities)
     {
         auto entity = entry.second;
         if (entity->type == EntityType::PLAYER_TYPE)
         {
-            player = static_cast<Player*>(entity);
+            player = std::static_pointer_cast<Player>(entity);
         }
     }
     
     // basic respawning loop
-    // if((assignedPositionMap.size() < formationPositions.size()) && (float)rand()/RAND_MAX <= 0.05)
-    // {
-    //     std::cout << "spawning more enemies..." << std::endl;
-    //     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
-        
-    //     const char* enemyExplosionSoundLocation = "./resources/sounds/explosion2.wav";
-    //     const char* simpleEnemyFireSoundLocation = "./resources/sounds/simpleEnemy_shoot.wav";
-        
-    //     const char* powerupSoundLocation = "./resources/sounds/powerUp.wav";
-        
-    //     Texture2D enemyTexture = LoadTexture(enemySpriteSheetLocation);
-        
-    //     Wave simpleEnemyFireWave = LoadWave(simpleEnemyFireSoundLocation);
-    //     Sound simpleEnemyFireSound = LoadSoundFromWave(simpleEnemyFireWave);
-        
-    //     Wave enemyExplosionWave = LoadWave(enemyExplosionSoundLocation);
-    //     Sound enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
-        
-    //     float xChance = ((float)rand()/RAND_MAX);
-    //     int randX = xChance <= 0.5 ? 0 : screenWidth;
-    //     float yChance = ((float)rand()/RAND_MAX);
-    //     int randY = yChance * 0.5 * screenHeight;
-        
-    //     std::cout << randX << "," << randY << std::endl;
-        
-    //     SimpleEnemy* enemy = new SimpleEnemy
-    //     (
-    //      enemyTexture, 
-    //      enemyExplosionSound, 
-    //      simpleEnemyFireSound,
-    //      {0.0, 0.0},
-    //      {96, 0},
-    //      {32.0,32.0},
-    //      {32.0, 32.0}, 
-    //      {0.0, 1024.0}, 
-    //      {32.0, 0.0}, 
-    //      3, 
-    //      2.0, 
-    //      {32.0, 32.0}, 
-    //      {50.0, 50.0}, 
-    //      {32.0, 32.0}, 
-    //      {50.0, 50.0}, 
-    //      3, 
-    //      {32.0, 0}, 
-    //      6.0, 
-    //      {50.0, 50.0}, 
-    //      {(float)randX, (float)randY}, 
-    //      10,
-    //      50,
-    //      0.2
-    //     );
-        
-    //     FlyingEnemy* flyingEnemy = new FlyingEnemy
-    //     (
-    //      enemyTexture, 
-    //      enemyExplosionSound, 
-    //      simpleEnemyFireSound,
-    //      {0.0, 32.0},
-    //      {96, 32.0},
-    //      {32.0,32.0},
-    //      {32.0, 32.0}, 
-    //      {0.0, 1152.0}, 
-    //      {32.0, 0.0}, 
-    //      3, 
-    //      2.0, 
-    //      {32.0, 32.0}, 
-    //      {50.0, 50.0}, 
-    //      {32.0, 32.0}, 
-    //      {50.0, 50.0}, 
-    //      3, 
-    //      {32.0, 0}, 
-    //      6.0, 
-    //      {50.0, 50.0}, 
-    //      {(float)randX, (float)randY}, 
-    //      10,
-    //      50,
-    //      0.2
-    //     );
-        
-    //     enemy->resettingPosition = true;
-    //     flyingEnemy->resettingPosition = true;
-    //     Entity* newEnemy = static_cast<Entity*>(enemy);
-    //     Entity* newFlyingEnemy = static_cast<Entity*>(flyingEnemy);
-        
-    //     if((float)rand()/RAND_MAX <= 0.5)
-    //     {
-    //         addEntity(newEnemy);
-    //         entities[newEnemy->id]->position = {(float)randX, (float)randY};
-    //     }
-    //     else
-    //     {
-    //         addEntity(newFlyingEnemy);
-    //         entities[newFlyingEnemy->id]->position = {(float)randX, (float)randY};
-    //     }
-    // }
+    if((assignedPositionMap.size() < formationPositions.size()) && (float)rand()/RAND_MAX <= 0.05)
+    {
+        float xChance = ((float)rand()/RAND_MAX);
+        int randX = xChance <= 0.5 ? 0 : screenWidth;
+        float yChance = ((float)rand()/RAND_MAX);
+        int randY = yChance * 0.5 * screenHeight;
+     
+        std::shared_ptr<SimpleEnemy> enemy = std::shared_ptr<SimpleEnemy>(new SimpleEnemy
+        (
+         enemyTexture, 
+         enemyExplosionSound, 
+         simpleEnemyFireSound,
+         {0.0, 0.0},
+         {96, 0},
+         {32.0,32.0},
+         {32.0, 32.0}, 
+         {0.0, 1024.0}, 
+         {32.0, 0.0}, 
+         3, 
+         2.0, 
+         {32.0, 32.0}, 
+         {50.0, 50.0}, 
+         {32.0, 32.0}, 
+         {50.0, 50.0}, 
+         3, 
+         {32.0, 0}, 
+         6.0, 
+         {50.0, 50.0}, 
+         {(float)randX, (float)randY}, 
+         10,
+         50,
+         0.2
+        ));
+     
+        std::shared_ptr<FlyingEnemy> flyingEnemy = std::shared_ptr<FlyingEnemy>(new FlyingEnemy
+        (
+         enemyTexture, 
+         enemyExplosionSound, 
+         simpleEnemyFireSound,
+         {0.0, 32.0},
+         {96, 32.0},
+         {32.0,32.0},
+         {32.0, 32.0}, 
+         {0.0, 1152.0}, 
+         {32.0, 0.0}, 
+         3, 
+         2.0, 
+         {32.0, 32.0}, 
+         {50.0, 50.0}, 
+         {32.0, 32.0}, 
+         {50.0, 50.0}, 
+         3, 
+         {32.0, 0}, 
+         6.0, 
+         {50.0, 50.0}, 
+         {(float)randX, (float)randY}, 
+         10,
+         50,
+         0.2
+        ));
+     
+        enemy->resettingPosition = true;
+        flyingEnemy->resettingPosition = true;
+        std::shared_ptr<Entity> newEnemy = std::static_pointer_cast<Entity>(enemy);
+        std::shared_ptr<Entity> newFlyingEnemy = std::static_pointer_cast<Entity>(flyingEnemy);
+     
+        if((float)rand()/RAND_MAX <= 0.5)
+        {
+            addEntity(newEnemy);
+            newEnemy->position = {(float)randX, (float)randY};
+        }
+        else
+        {
+            addEntity(newFlyingEnemy);
+            newFlyingEnemy->position = {(float)randX, (float)randY};
+        }
+    }
     
     // decrease hp of enemies if colloding with player bullet
     for (auto entry : entities)
@@ -179,7 +175,7 @@ void Manager::update()
         auto entity = entry.second;
         if (entity->type == EntityType::ENEMY_TYPE)
         {
-            Enemy* enemy = static_cast<Enemy*>(entity);
+            std::shared_ptr<Enemy> enemy = std::static_pointer_cast<Enemy>(entity);
             
             // check if colliding with player bullets
             for (auto e : entities)
@@ -187,7 +183,7 @@ void Manager::update()
                 auto b = e.second;
                 if (b->type == EntityType::PLAYER_BULLET)
                 {
-                    Bullet* bullet = static_cast<Bullet*>(b);
+                    std::shared_ptr<Bullet> bullet = std::static_pointer_cast<Bullet>(b);
                     
                     Rectangle bulletHitbox =
                     {
@@ -241,7 +237,7 @@ void Manager::update()
         auto entity = entry.second;
         if(entity->type ==  EntityType::POWERUP_TYPE)
         {
-            Powerup* powerup = static_cast<Powerup*>(entity);
+            std::shared_ptr<Powerup> powerup = std::static_pointer_cast<Powerup>(entity);
             
             Rectangle powerupHitbox = 
             {
@@ -272,14 +268,15 @@ void Manager::update()
     // check for destroyed bullets and enemies - I NEED MORE BULLETS
     for (auto it = begin(entities); it != end(entities);)
     {
-        Entity* entity = it->second;
+        std::shared_ptr<Entity> entity = it->second;
         if (entity->type == EntityType::PLAYER_BULLET
             || entity->type == EntityType::ENEMY_BULLET)
         {
-            Bullet* bullet = static_cast<Bullet*>(entity);
+            std::shared_ptr<Bullet> bullet = std::static_pointer_cast<Bullet>(entity);
             if (bullet->destroyed)
             {
-                entities.erase(it++);
+                deleteEntity(entity->id);
+                it++;
             }
             else
                 ++it;
@@ -287,13 +284,12 @@ void Manager::update()
         }
         else if (entity->type == EntityType::ENEMY_TYPE)
         {
-            Enemy* enemy = static_cast<Enemy*>(entity);
+            std::shared_ptr<Enemy> enemy = std::static_pointer_cast<Enemy>(entity);
             if (enemy->destroyed)
             {
-                entities.erase(it++);
-                Vector2* pos = assignedPositionMap[entity->id];
-                unavailableFormationPositions.erase((*pos));
-                assignedPositionMap.erase(entity->id);
+                score += 10;
+                deleteEntity(entity->id);
+                it++;
             }
             else
                 ++it;
@@ -302,7 +298,8 @@ void Manager::update()
         {
             if (entity->destroyed)
             {
-                entities.erase(it++);
+                deleteEntity(entity->id);
+                it++;
             }
             else
                 ++it;
@@ -377,18 +374,18 @@ void Manager::update()
         
         if (entity->type == EntityType::PLAYER_TYPE)
         {
-            Player* player = static_cast<Player*>(entity);
+            std::shared_ptr<Player> player = std::static_pointer_cast<Player>(entity);
             player->update(this, screenWidth, screenHeight, dt);
         }
         else if (entity->type == EntityType::PLAYER_BULLET
                  || entity->type == EntityType::ENEMY_BULLET)
         {
-            Bullet* bullet = static_cast<Bullet*>(entity);
+            std::shared_ptr<Bullet> bullet = std::static_pointer_cast<Bullet>(entity);
             bullet->update(this, dt);
         }
         else if (entity->type == EntityType::ENEMY_TYPE)
         {
-            Enemy* enemy = static_cast<Enemy*>(entity);
+            std::shared_ptr<Enemy> enemy = std::static_pointer_cast<Enemy>(entity);
             
             // if (!enemy->attacking && !enemy->resettingPosition)
             // {
@@ -397,8 +394,8 @@ void Manager::update()
             
             if (enemy->enemyType == EnemyType::SIMPLE)
             {
-                SimpleEnemy* simpleEnemy = static_cast<SimpleEnemy*>(enemy);
-                Powerup* powerup = simpleEnemy->update(this, dt);
+                std::shared_ptr<SimpleEnemy> simpleEnemy = std::static_pointer_cast<SimpleEnemy>(enemy);
+                std::shared_ptr<Powerup> powerup = simpleEnemy->update(this, dt);
                 if (powerup)
                 {
                     powerupsToAdd.push_back(powerup);
@@ -406,8 +403,8 @@ void Manager::update()
             }
             else if (enemy->enemyType == EnemyType::FLYING)
             {
-                FlyingEnemy* flyingEnemy = static_cast<FlyingEnemy*>(enemy);
-                Powerup* powerup = flyingEnemy->update(this, dt);
+                std::shared_ptr<FlyingEnemy> flyingEnemy = std::static_pointer_cast<FlyingEnemy>(enemy);
+                std::shared_ptr<Powerup> powerup = flyingEnemy->update(this, dt);
                 if (powerup)
                 {
                     powerupsToAdd.push_back(powerup);
@@ -417,7 +414,7 @@ void Manager::update()
         }
         else if (entity->type == EntityType::POWERUP_TYPE)
         {
-            Powerup* powerup = static_cast<Powerup*>(entity);
+            std::shared_ptr<Powerup> powerup = std::static_pointer_cast<Powerup>(entity);
             powerup->update(this, dt);
         }
         else
@@ -448,12 +445,12 @@ void Manager::draw()
         if (entity->type == EntityType::PLAYER_BULLET
             || entity->type == EntityType::ENEMY_BULLET)
         {
-            Bullet* bullet = static_cast<Bullet*>(entity);
+            std::shared_ptr<Bullet> bullet = std::static_pointer_cast<Bullet>(entity);
             bullet->draw(dt);
         }
         else if (entity->type == EntityType::ENEMY_TYPE)
         {
-            Enemy* enemy = static_cast<Enemy*>(entity);
+            std::shared_ptr<Enemy> enemy = std::static_pointer_cast<Enemy>(entity);
             enemy->draw(dt);
         }
         else if (entity->type == EntityType::PLAYER_TYPE)
