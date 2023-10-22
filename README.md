@@ -18,3 +18,6 @@ git submodule update --init
 - [ ] Score
 - [ ] Simple gameplay loop
 
+# Preview
+![preview](./assets/preview.gif)
+
