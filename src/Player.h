@@ -43,6 +43,12 @@ struct Player : Entity
     Texture2D defaultBulletSheet;
     // health points
     float hp;
+    // is respawning;
+    bool respawning;
+    // respawning time
+    // TODO: set respawn times through params
+    float respawnTime = 1500;
+    float respawnTimeLeft = 1500;
     // active powerups
     std::unordered_map<PowerupType, float> activePowerups;
 

@@ -20,7 +20,7 @@
 #include <vector>
 
 #ifndef LOADEDFONT
-#define LOADEDFONT LoadFontEx("resources/fonts/CascadiaCode/CascadiaCode.ttf", 20, 0, 250)
+#define LOADEDFONT LoadFontEx("resources/fonts/CascadiaCode/CascadiaCode.ttf", 20, 0, 500)
 #endif
 
 //------------------------------------------------------------------------------------
@@ -50,7 +50,7 @@ int main(void)
     Vector2 shipPosition =
     {
         (float)screenWidth / 2.0f,
-        (float)screenHeight / 2.0f,
+        8 * (float)screenHeight / 10.0f,
     };
     
     // Load Textures + Create Entities
@@ -206,19 +206,30 @@ int main(void)
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {
         
-        // Update
-        //----------------------------------------------------------------------------------
-        gameManager.update();
-        //----------------------------------------------------------------------------------
         
-        // Draw
-        //----------------------------------------------------------------------------------
         BeginDrawing();
         
         ClearBackground({8, 36, 52, 255});
-        
+
+        if(!gameManager.gameOver)
+        {
+            // Update
+            //----------------------------------------------------------------------------------
+            gameManager.update();
+            //----------------------------------------------------------------------------------
+        }
+
+        // Draw
+        //----------------------------------------------------------------------------------
         gameManager.draw();
-        
+
+        if (gameManager.gameOver)
+        {
+            DrawTextEx(gameManager.gameFont, "GAME OVER", {gameManager.screenWidth/2 - 200, gameManager.screenHeight/2 - 100}, 80, 1, RED);
+        }
+
+        //----------------------------------------------------------------------------------
+
         std::string shipPosText = fmt::format("X: {}, Y: {}", player->position.x, player->position.y);
         std::string formationPositionsText = fmt::format("total: {}, assigned: {}", gameManager.formationPositions.size(), gameManager.assignedPositionMap.size());
         
@@ -235,12 +246,14 @@ int main(void)
         std::string scoreText = fmt::format("score : {}", gameManager.score);
         std::string numBulletsText = fmt::format("# of entities: {}, # of bullets: {}", gameManager.entities.size(), bulletCount);
         std::string velocityText = fmt::format("ship velocity: X: {}, y: {}", player->currentVelocity.x, player->currentVelocity.y);
+        std::string livesText = fmt::format("lives : {}", gameManager.lives);
         
         DrawTextEx(gameManager.gameFont, scoreText.c_str(), {10, 10}, 20, 1, RAYWHITE);
         DrawTextEx(gameManager.gameFont, "move the ship with arrow keys or WASD", {10, 30}, 20, 1, RAYWHITE);
         DrawTextEx(gameManager.gameFont, shipPosText.c_str(), {10, 50}, 20, 1, RAYWHITE);
         DrawTextEx(gameManager.gameFont, numBulletsText.c_str(), {10, 70}, 20, 1, RAYWHITE);
         DrawTextEx(gameManager.gameFont, velocityText.c_str(), {10, 90}, 20, 1, RAYWHITE);
+        DrawTextEx(gameManager.gameFont, livesText.c_str(), {10, 130}, 20, 1, RAYWHITE);
         
         EndDrawing();
         //----------------------------------------------------------------------------------

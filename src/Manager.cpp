@@ -17,6 +17,7 @@ Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 
     
     timeSinceLastFormationUpdate = 0;
     score = 0;
+    lives = 3;
 
     const char* enemySpriteSheetLocation = "./resources/textures/enemies.png";
  
@@ -32,6 +33,7 @@ Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 
  
     Wave enemyExplosionWave = LoadWave(enemyExplosionSoundLocation);
     enemyExplosionSound = LoadSoundFromWave(enemyExplosionWave);
+    gameOver = false;
 }
 
 void Manager::addEntity(std::shared_ptr<Entity> _entity)
@@ -168,7 +170,42 @@ void Manager::update()
             newFlyingEnemy->position = {(float)randX, (float)randY};
         }
     }
-    
+
+    // decrease life of player if hit by enemy bullet or enemy 
+    if(!player->respawning)
+    {
+        for (auto entry : entities)
+        {
+            auto entity = entry.second;
+            if (entity->type == EntityType::ENEMY_TYPE || entity->type == EntityType::ENEMY_BULLET)
+            {
+                    Rectangle collidingHitbox =
+                    {
+                        entity->position.x - (entity->hitboxDims.x) / 2,
+                        entity->position.y - (entity->hitboxDims.y) / 2,
+                        entity->hitboxDims.x,
+                        entity->hitboxDims.y
+                    };
+                    Rectangle playerHitbox =
+                    {
+                        player->position.x - (player->hitboxDims.x) / 2,
+                        player->position.y - (player->hitboxDims.y) / 2,
+                        player->hitboxDims.x,
+                        player->hitboxDims.y
+                    };
+
+                    if (CheckCollisionRecs(collidingHitbox, playerHitbox))
+                    {
+                        lives--;
+                        if (lives <= 0) gameOver = true;
+                        player->respawning = true;
+                        player->respawnTimeLeft = player->respawnTime;
+                        break;
+                    }
+            }
+        }
+    }
+
     // decrease hp of enemies if colloding with player bullet
     for (auto entry : entities)
     {
@@ -455,7 +492,8 @@ void Manager::draw()
         }
         else if (entity->type == EntityType::PLAYER_TYPE)
         {
-            entity->draw();
+            std::shared_ptr<Player> p = std::static_pointer_cast<Player>(entity);
+            p->draw();
         }
         else if (entity->type == EntityType::POWERUP_TYPE)
         {

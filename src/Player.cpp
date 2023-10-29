@@ -26,6 +26,8 @@ Entity(_spriteSheet, _textureDims, _outputDims, _hitboxDims, _origin, EntityType
     indexingVec = _indexingVec;
     defaultBulletSheet = _defaultBulletSheet;
     hp = _hp;
+
+    respawning = false;
 }
 
 //------------------------------------------------------------------------------------
@@ -171,11 +173,21 @@ void Player::update(Manager* _manager, int _screenWidth, int _screenHeight, floa
     {
         auto now = std::chrono::steady_clock::now();
         auto timeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastShotTime);
+
         if (timeElapsed.count() >= (float)1000 / fireRate)
         {
             fireDefault(_manager);
             lastShotTime = now;
         }
+
+    }
+
+    respawnTimeLeft -= dt;
+
+    if (respawnTimeLeft <= 0)
+    {
+        respawnTimeLeft = respawnTime;
+        respawning = false;
     }
 }
 
@@ -184,4 +196,20 @@ void Player::powerUp(std::shared_ptr<Powerup> powerup)
     float powerupTime = Powerup::powerupLifetimes[powerup->powerupType];
     activePowerups[powerup->powerupType] = powerupTime; 
     PlaySound(powerupSound);
+}
+
+void Player::draw()
+{
+    Rectangle srcRec = {0.0f, 0.0f, textureDims.x, textureDims.y};
+    Rectangle destRec = {position.x, position.y, outputDims.x, outputDims.y};
+    Vector2 origin = {(float)outputDims.x / 2, (float)outputDims.y / 2};
+
+    if(respawning)
+    {
+        DrawTexturePro(spriteSheet, srcRec, destRec, origin, (float)0, RED);
+    } else
+    {
+        DrawTexturePro(spriteSheet, srcRec, destRec, origin, (float)0, WHITE);
+    }
+    // DrawRectangleLines(position.x - origin.x, position.y - origin.y, hitboxDims.x, hitboxDims.y, RED);
 }

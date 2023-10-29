@@ -56,12 +56,16 @@ struct Manager
     std::unordered_map<Vector2, bool, Vector2HashFunction, Vector2EqualityFunction> unavailableFormationPositions;
     // player score
     int score;
+    // player lives
+    int lives;
     // enemy texture
     Texture2D enemyTexture;
     // simple enemy fire sound
     Sound simpleEnemyFireSound;
     // enemy explosion sound
     Sound enemyExplosionSound;
+    // is the game over?
+    bool gameOver;
 
     float formationUpdateRate = 2.0;
     float MAX_X_OFFSET = 100.0;
