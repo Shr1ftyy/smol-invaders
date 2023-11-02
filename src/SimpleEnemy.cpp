@@ -43,7 +43,8 @@ std::shared_ptr<Powerup> SimpleEnemy::update(Manager* _manager, float _dt)
 
     if (!resettingPosition)
     {
-        position = (*_manager->assignedPositionMap[id]);
+        int p = _manager->assignedPositionMap[id];
+        position = *(_manager->formationPositions[p]);
     }
     
     if (!exploding && !destroyed && hp <= 0)

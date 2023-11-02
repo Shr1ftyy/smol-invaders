@@ -12,23 +12,6 @@
 #include <vector>
 #include <unordered_map>
 
-struct Vector2HashFunction
-{
-    size_t operator()(const Vector2 vec) const
-    {
-        size_t rowHash = std::hash<float>()(vec.x);
-        size_t colHash = std::hash<float>()(vec.y) << 1;
-        return rowHash ^ colHash;
-    }
-};
-
-struct Vector2EqualityFunction
-{
-    bool operator()(const Vector2 vec1, const Vector2 vec2) const
-    {
-        return Vector2Equals(vec1, vec1);
-    }
-};
 
 struct Manager
 {
@@ -51,9 +34,9 @@ struct Manager
     // formationPositions for enemies;
     std::vector<Vector2*> formationPositions;
     // assigned formations position of enemies
-    std::unordered_map<unsigned int, Vector2*> assignedPositionMap;
+    std::unordered_map<EntityId, int> assignedPositionMap;
     // occupied formation positions
-    std::unordered_map<Vector2, bool, Vector2HashFunction, Vector2EqualityFunction> unavailableFormationPositions;
+    std::unordered_map<int, bool> unavailableFormationPositions;
     // player score
     int score;
     // player lives

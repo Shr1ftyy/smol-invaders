@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <chrono>
+#include <iostream>
 
 Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 _bottomRight, float _spacing)
 {
@@ -36,44 +37,49 @@ Manager::Manager(int _screenWidth, int _screenHeight, Vector2 _topLeft, Vector2 
     gameOver = false;
 }
 
+// TODO: why do some formation positions end up not being filled?
 void Manager::addEntity(std::shared_ptr<Entity> _entity)
 {    
     if (_entity->type == EntityType::ENEMY_TYPE)
     {
         if(assignedPositionMap.size() < formationPositions.size())
         {
-            for(Vector2* pos : formationPositions)
+            for(int p = 0; p < formationPositions.size(); p++)
             {
                 
-                if(unavailableFormationPositions.find((*pos)) == unavailableFormationPositions.end())
+                if(!unavailableFormationPositions[p])
                 {
                     // add enemy into formation
-                    assignedPositionMap[_entity->id] = pos;
-                    unavailableFormationPositions[(*pos)] = true;
-                    // TODO: DO NOT FORCE POSITION WHEN SPAWNING?!!?!??!!?!?!
-                    _entity->position = (*pos);
+                    assignedPositionMap[_entity->id] = p;
+                    unavailableFormationPositions[p] = true;
+                    _entity->position = (*formationPositions[p]);
                     
                     entities[_entity->id] = _entity;
+                    std::cout << "assigned position to enemy!!!" << std::endl;
                     break;
                 }
             }
+            std::cout << "position unavailable... #1" << std::endl;
         }
+        std::cout << "position unavailable... #2" << std::endl;
     } else 
     {
+        std::cout << "diff entity... #3" << std::endl;
         entities[_entity->id] = _entity;
     }
 }
 
-// TODO: WIP
+// TODO: why do some formation positions end up not being filled?
 void Manager::deleteEntity(EntityId _id)
 {
     // remove enemy from formation
     auto entity = entities[_id];
     if (entity->type == EntityType::ENEMY_TYPE)
     {
-        Vector2* pos = assignedPositionMap[_id];
-        unavailableFormationPositions.erase((*pos));
+        int pos = assignedPositionMap[_id];
+        unavailableFormationPositions.erase(pos);
         assignedPositionMap.erase(_id);
+        unavailableFormationPositions[pos] = false;
     }
     
     entities.erase(_id);
@@ -95,10 +101,12 @@ void Manager::update()
     // basic respawning loop
     if((assignedPositionMap.size() < formationPositions.size()) && (float)rand()/RAND_MAX <= 0.05)
     {
+        std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch() ).count() << std::endl;
+        std::cout << "spawning more" << std::endl;
         float xChance = ((float)rand()/RAND_MAX);
-        int randX = xChance <= 0.5 ? 0 : screenWidth;
+        int randX = xChance <= 0.5 ? 0 + 5 : screenWidth - 5;
         float yChance = ((float)rand()/RAND_MAX);
-        int randY = yChance * 0.5 * screenHeight;
+        int randY = yChance * 0.5 * screenHeight - 5;
      
         std::shared_ptr<SimpleEnemy> enemy = std::shared_ptr<SimpleEnemy>(new SimpleEnemy
         (
@@ -160,12 +168,14 @@ void Manager::update()
         std::shared_ptr<Entity> newFlyingEnemy = std::static_pointer_cast<Entity>(flyingEnemy);
      
         if((float)rand()/RAND_MAX <= 0.5)
-        {
+        {   
+            std::cout << "--==enemy==--" << std::endl;
             addEntity(newEnemy);
             newEnemy->position = {(float)randX, (float)randY};
         }
         else
         {
+            std::cout << "--==flying==--" << std::endl;
             addEntity(newFlyingEnemy);
             newFlyingEnemy->position = {(float)randX, (float)randY};
         }
@@ -360,11 +370,9 @@ void Manager::update()
         {
             if(formationPositions[0]->x > topLeft.x - MAX_X_OFFSET)
             {
-                for(Vector2* pos: formationPositions)
+                for(int i = 0; i < formationPositions.size(); i++)
                 {
-                    unavailableFormationPositions.erase((*pos));
-                    pos->x += DELTA;   
-                    unavailableFormationPositions[(*pos)] = true;
+                    formationPositions[i]->x += DELTA;   
                 }
                 
             }
@@ -389,11 +397,9 @@ void Manager::update()
             
             if(maxPos->x <= bottomRight.x + MAX_X_OFFSET)
             {
-                for(Vector2* pos : formationPositions)
+                for (int i = 0; i < formationPositions.size(); i++)
                 {
-                    unavailableFormationPositions.erase((*pos));
-                    pos->x += DELTA;   
-                    unavailableFormationPositions[(*pos)] = true;
+                    formationPositions[i]->x += DELTA;   
                 }
                 
             }

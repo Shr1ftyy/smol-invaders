@@ -91,7 +91,8 @@ std::shared_ptr<Powerup> FlyingEnemy::update(Manager* _manager, float _dt)
     }
     else
     {
-        position = (*_manager->assignedPositionMap[id]);
+        int p = _manager->assignedPositionMap[id];
+        position = *(_manager->formationPositions[p]);
     }
     
     

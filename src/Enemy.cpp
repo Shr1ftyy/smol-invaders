@@ -66,7 +66,8 @@ void Enemy::fireWeapon(Manager* _manager)
 void Enemy::goBackToFormation(Manager* _manager, float _dt)
 {
     attacking = false;
-    Vector2 formationPosition = (*_manager->assignedPositionMap[id]);
+    int p = _manager->assignedPositionMap[id];
+    Vector2 formationPosition = *(_manager->formationPositions[p]);
     
     if
     (
