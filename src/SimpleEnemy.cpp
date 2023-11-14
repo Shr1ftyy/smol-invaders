@@ -31,7 +31,7 @@ std::shared_ptr<Powerup> SimpleEnemy::update(Manager* _manager, float _dt)
         attacking = true;    
     }
     
-    if(attacking)
+    if (attacking)
     {
         attack(_manager, _dt);
     }

@@ -6,3 +6,5 @@ temp/
 CMakeCache.txt
 CMakeFiles
 compile_commands.json
+
+*.swp

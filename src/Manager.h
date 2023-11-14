@@ -12,7 +12,6 @@
 #include <vector>
 #include <unordered_map>
 
-
 struct Manager
 {
     // global game font
@@ -29,6 +28,8 @@ struct Manager
     std::chrono::system_clock::time_point lastDrawTime;
     // entity map
     EntityMap entities;
+    // entities to delete on next update()
+    std::vector<Entity*> deleteQueue;
     // powerups that need to be spawned in the next frame
     std::vector<std::shared_ptr<Powerup>> powerupsToAdd;
     // formationPositions for enemies;
@@ -49,6 +50,8 @@ struct Manager
     Sound enemyExplosionSound;
     // is the game over?
     bool gameOver;
+    // is debugging
+    bool DEBUG;
 
     float formationUpdateRate = 2.0;
     float MAX_X_OFFSET = 100.0;

@@ -173,7 +173,7 @@ void Enemy::update(Manager* _manager)
     }
 }
 
-void Enemy::draw(float dt)
+void Enemy::draw(Manager* _manager, float dt)
 {
     if(!exploding && !destroyed)
     {
@@ -211,6 +211,7 @@ void Enemy::draw(float dt)
             if (currentIndex >= numExplosionFrames)
             {
                 destroyed = true;
+                _manager->deleteQueue.push_back(this);
             }
             
             Vector2 offset = {(float)currentIndex * explosionIndexingVec.x, (float)currentIndex * explosionIndexingVec.y};

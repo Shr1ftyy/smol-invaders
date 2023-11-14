@@ -1,8 +1,6 @@
 #define FMT_HEADER_ONLY
 #define _USE_MATH_DEFINES
 
-#include "raylib.h"
-
 #define BULLET_HEIGHT 10
 #define BULLET_WIDTH 5
 #define BULLET_VEL 0.5
@@ -13,6 +11,7 @@
 #include "SimpleEnemy.h"
 #include "FlyingEnemy.h"
 
+#include "raylib.h"
 #include "raymath.h"
 #include <chrono>
 #include <fmt/core.h>
@@ -225,7 +224,7 @@ int main(void)
 
         if (gameManager.gameOver)
         {
-            DrawTextEx(gameManager.gameFont, "GAME OVER", {gameManager.screenWidth/2 - 200, gameManager.screenHeight/2 - 100}, 80, 1, RED);
+            DrawTextEx(gameManager.gameFont, "GAME OVER", {(float)gameManager.screenWidth/2 - 200, (float)gameManager.screenHeight/2 - 100}, 80, 1, RED);
         }
 
         //----------------------------------------------------------------------------------

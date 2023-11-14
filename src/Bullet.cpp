@@ -40,7 +40,7 @@ void Bullet::update(Manager* _manager, float dt)
     }
 }
 
-void Bullet::draw(int dt)
+void Bullet::draw(Manager* _manager, int dt)
 {
     if (exploding)
     {
@@ -52,6 +52,7 @@ void Bullet::draw(int dt)
             {
                 exploding = false;
                 destroyed = true;
+                _manager->deleteQueue.push_back(this);
                 return;
             }
             

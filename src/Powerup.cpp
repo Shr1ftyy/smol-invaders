@@ -26,6 +26,13 @@ void Powerup::update(Manager* _manager, float dt)
         Vector2 displacement = {velocity.x * dt, velocity.y * dt};
         position = Vector2Add(position, displacement);
         if (outOfBounds(_manager->screenWidth, _manager->screenHeight))
+        {
             destroyed = true;
+            _manager->deleteQueue.push_back(this);
+        }
+    }
+    else 
+    {
+        _manager->deleteQueue.push_back(this);
     }
 }

@@ -1,6 +1,8 @@
 #include "Manager.h"
 #include "helpers.h"
 
+#include <fmt/core.h>
+
 #include <algorithm>
 #include <chrono>
 #include <iostream>
@@ -55,16 +57,16 @@ void Manager::addEntity(std::shared_ptr<Entity> _entity)
                     _entity->position = (*formationPositions[p]);
                     
                     entities[_entity->id] = _entity;
-                    std::cout << "assigned position to enemy!!!" << std::endl;
+                    // std::cout << "assigned position to enemy!!!" << std::endl;
                     break;
                 }
             }
-            std::cout << "position unavailable... #1" << std::endl;
+            // std::cout << "position unavailable... #1" << std::endl;
         }
-        std::cout << "position unavailable... #2" << std::endl;
+        // std::cout << "position unavailable... #2" << std::endl;
     } else 
     {
-        std::cout << "diff entity... #3" << std::endl;
+        // std::cout << "diff entity... #3" << std::endl;
         entities[_entity->id] = _entity;
     }
 }
@@ -89,7 +91,7 @@ void Manager::update()
 {
     // search for player entity
     std::shared_ptr<Player> player;
-    for(auto entry: entities)
+    for (auto entry: entities)
     {
         auto entity = entry.second;
         if (entity->type == EntityType::PLAYER_TYPE)
@@ -99,7 +101,7 @@ void Manager::update()
     }
     
     // basic respawning loop
-    if((assignedPositionMap.size() < formationPositions.size()) && (float)rand()/RAND_MAX <= 0.05)
+    if ((assignedPositionMap.size() < formationPositions.size()) && (float)rand()/RAND_MAX <= 0.05)
     {
         std::cout << std::chrono::duration_cast<std::chrono::milliseconds>( std::chrono::system_clock::now().time_since_epoch() ).count() << std::endl;
         std::cout << "spawning more" << std::endl;
@@ -216,13 +218,42 @@ void Manager::update()
         }
     }
 
-    // decrease hp of enemies if colloding with player bullet
+    // decrease hp of enemies if colloding with player bullet and more
     for (auto entry : entities)
     {
         auto entity = entry.second;
+
+
         if (entity->type == EntityType::ENEMY_TYPE)
         {
             std::shared_ptr<Enemy> enemy = std::static_pointer_cast<Enemy>(entity);
+
+            Rectangle enemyHitbox =
+            {
+                enemy->position.x - (enemy->hitboxDims.x) / 2,
+                enemy->position.y - (enemy->hitboxDims.y) / 2,
+                enemy->hitboxDims.x,
+                enemy->hitboxDims.y
+            };
+
+            // debugging tooltip -> check enemy info
+            if (DEBUG)
+            {
+                float topLeft = screenHeight * 0.75;
+                Vector2 mpos = GetMousePosition();
+
+                if (CheckCollisionPointRec(mpos, enemyHitbox))
+                {
+                    auto posText = fmt::format("pos : {},{}", enemy->position.x, enemy->position.y);
+                    auto formationPosition = fmt::format("form : {},{}", (*formationPositions[assignedPositionMap[enemy->id]]).x, (*formationPositions[assignedPositionMap[enemy->id]]).y);
+                    auto resettingText = fmt::format("resetting: {}", enemy->resettingPosition);
+                    auto attackingText = fmt::format("attacking: {}", enemy->attacking);
+                    DrawTextEx(gameFont, posText.c_str(), {10, topLeft}, 20, 1, YELLOW);
+                    DrawTextEx(gameFont, formationPosition.c_str(), {10, topLeft + 20}, 20, 1, YELLOW);
+                    DrawTextEx(gameFont, resettingText.c_str(), {10, topLeft + 40}, 20, 1, YELLOW);
+                    DrawTextEx(gameFont, attackingText.c_str(), {10, topLeft + 60}, 20, 1, YELLOW);
+                }
+            }
             
             // check if colliding with player bullets
             for (auto e : entities)
@@ -245,15 +276,8 @@ void Manager::update()
                         bullet->prevPosition.y - (bullet->hitboxDims.y) / 2,
                         bullet->hitboxDims.x,
                         bullet->hitboxDims.y
-                    };
-                    Rectangle enemyHitbox =
-                    {
-                        enemy->position.x - (enemy->hitboxDims.x) / 2,
-                        enemy->position.y - (enemy->hitboxDims.y) / 2,
-                        enemy->hitboxDims.x,
-                        enemy->hitboxDims.y
-                    };
-                    
+                    };                    
+
                     if (
                         !CheckCollisionRecs(prevBulletHitbox, enemyHitbox) && 
                         CheckCollisionRecs(bulletHitbox, enemyHitbox)
@@ -309,51 +333,11 @@ void Manager::update()
         }
     }
     
-
-    // TODO: use smart pointers instead of raw pointers going forward
-    // TODO: (eventually) rewrite everything to support smart pointers :)
-    // check for destroyed bullets and enemies - I NEED MORE BULLETS
-    for (auto it = begin(entities); it != end(entities);)
+    // delete entities if they are in the delete queue
+    for(auto it = deleteQueue.rbegin(); it != deleteQueue.rend(); ++it)
     {
-        std::shared_ptr<Entity> entity = it->second;
-        if (entity->type == EntityType::PLAYER_BULLET
-            || entity->type == EntityType::ENEMY_BULLET)
-        {
-            std::shared_ptr<Bullet> bullet = std::static_pointer_cast<Bullet>(entity);
-            if (bullet->destroyed)
-            {
-                deleteEntity(entity->id);
-                it++;
-            }
-            else
-                ++it;
-            continue;
-        }
-        else if (entity->type == EntityType::ENEMY_TYPE)
-        {
-            std::shared_ptr<Enemy> enemy = std::static_pointer_cast<Enemy>(entity);
-            if (enemy->destroyed)
-            {
-                score += 10;
-                deleteEntity(entity->id);
-                it++;
-            }
-            else
-                ++it;
-            continue;
-        } else if (entity->type ==  EntityType::POWERUP_TYPE)
-        {
-            if (entity->destroyed)
-            {
-                deleteEntity(entity->id);
-                it++;
-            }
-            else
-                ++it;
-            continue;
-        }
-        
-        ++it;
+        deleteEntity((**it).id);
+        deleteQueue.pop_back();
     }
     
     auto now = std::chrono::system_clock::now();
@@ -489,12 +473,12 @@ void Manager::draw()
             || entity->type == EntityType::ENEMY_BULLET)
         {
             std::shared_ptr<Bullet> bullet = std::static_pointer_cast<Bullet>(entity);
-            bullet->draw(dt);
+            bullet->draw(this, dt);
         }
         else if (entity->type == EntityType::ENEMY_TYPE)
         {
             std::shared_ptr<Enemy> enemy = std::static_pointer_cast<Enemy>(entity);
-            enemy->draw(dt);
+            enemy->draw(this, dt);
         }
         else if (entity->type == EntityType::PLAYER_TYPE)
         {
